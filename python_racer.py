@@ -26,8 +26,6 @@ CLEN = len(DATA_LR)
 
 BOARD = 120
 CMAX = BOARD*CLEN
-# curve = [0]*CMAX
-# updown = [0]*CMAX
 object_left = [0]*CMAX
 object_right = [0]*CMAX
 
@@ -41,29 +39,7 @@ PLCAR_Y = 10 # プレイヤーの車の表示位置　道路一番手前（画�
 LAPS = 3
 laptime =["0'00.00"]*LAPS
 
-coursedata = Course()
-
-def make_course():
-    for i in range(CLEN):
-        lr1 = DATA_LR[i]
-        lr2 = DATA_LR[(i+1)%CLEN]
-        ud1 = DATA_UD[i]
-        ud2 = DATA_UD[(i+1)%CLEN]
-        for j in range(BOARD):
-            pos = j+BOARD*i 
-            coursedata.add(Way(lr1*(BOARD-j)/BOARD + lr2*j/BOARD, ud1*(BOARD-j)/BOARD + ud2*j/BOARD))
-            # curve[pos] = lr1*(BOARD-j)/BOARD + lr2*j/BOARD
-            # updown[pos] = ud1*(BOARD-j)/BOARD + ud2*j/BOARD
-            if j == 60:
-                object_right[pos] = 1 # 看板
-            if i%8 < 7:
-                if j%12 == 0:
-                    object_left[pos] = 2 # ヤシの木
-            else:
-                if j%20 == 0:
-                    object_left[pos] = 3 # ヨット
-            if j%12 == 6:
-                object_left[pos] = 9 # 海
+coursedata = Course(CLEN, DATA_LR, DATA_UD)
 
 
 def time_str(val):
@@ -126,8 +102,7 @@ def drive_car(key): # プレイヤーの車の操作、制御
     if car_spd[0] > 320:
         car_spd[0] = 320
 
-    coursedata[0].curve
-    # car_x[0] -= car_spd[0]*curve[int(car_y[0]+PLCAR_Y)%CMAX]/50
+
     car_x[0] -= car_spd[0]*coursedata[int(car_y[0]+PLCAR_Y)%CMAX].curve/50
     if car_x[0] < 0:
         car_x[0] = 0
@@ -239,7 +214,7 @@ def main(): # メイン処理
         BOARD_H[i] = 3.4*(BOARD-i)/BOARD
         BOARD_UD[i] = 2*math.sin(math.radians(i*1.5))
 
-    make_course()
+    coursedata.make_course(BOARD, object_right, object_left)
     init_car()
 
     vertical = 0
