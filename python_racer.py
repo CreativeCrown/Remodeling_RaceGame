@@ -3,6 +3,8 @@ import sys
 import math
 import random
 from pygame.locals import *
+import course
+from course import *
 
 WHITE = (255, 255, 255)
 BLACK = (  0,   0,   0)
@@ -24,8 +26,8 @@ CLEN = len(DATA_LR)
 
 BOARD = 120
 CMAX = BOARD*CLEN
-curve = [0]*CMAX
-updown = [0]*CMAX
+# curve = [0]*CMAX
+# updown = [0]*CMAX
 object_left = [0]*CMAX
 object_right = [0]*CMAX
 
@@ -39,6 +41,7 @@ PLCAR_Y = 10 # プレイヤーの車の表示位置　道路一番手前（画�
 LAPS = 3
 laptime =["0'00.00"]*LAPS
 
+coursedata = Course()
 
 def make_course():
     for i in range(CLEN):
@@ -47,9 +50,10 @@ def make_course():
         ud1 = DATA_UD[i]
         ud2 = DATA_UD[(i+1)%CLEN]
         for j in range(BOARD):
-            pos = j+BOARD*i
-            curve[pos] = lr1*(BOARD-j)/BOARD + lr2*j/BOARD
-            updown[pos] = ud1*(BOARD-j)/BOARD + ud2*j/BOARD
+            pos = j+BOARD*i 
+            coursedata.add(Way(lr1*(BOARD-j)/BOARD + lr2*j/BOARD, ud1*(BOARD-j)/BOARD + ud2*j/BOARD))
+            # curve[pos] = lr1*(BOARD-j)/BOARD + lr2*j/BOARD
+            # updown[pos] = ud1*(BOARD-j)/BOARD + ud2*j/BOARD
             if j == 60:
                 object_right[pos] = 1 # 看板
             if i%8 < 7:
@@ -122,7 +126,9 @@ def drive_car(key): # プレイヤーの車の操作、制御
     if car_spd[0] > 320:
         car_spd[0] = 320
 
-    car_x[0] -= car_spd[0]*curve[int(car_y[0]+PLCAR_Y)%CMAX]/50
+    coursedata[0].curve
+    # car_x[0] -= car_spd[0]*curve[int(car_y[0]+PLCAR_Y)%CMAX]/50
+    car_x[0] -= car_spd[0]*coursedata[int(car_y[0]+PLCAR_Y)%CMAX].curve/50
     if car_x[0] < 0:
         car_x[0] = 0
         car_spd[0] *= 0.9
@@ -256,8 +262,8 @@ def main(): # メイン処理
         board_x = [0]*BOARD
         board_ud = [0]*BOARD
         for i in range(BOARD):
-            di += curve[int(car_y[0]+i)%CMAX]
-            ud += updown[int(car_y[0]+i)%CMAX]
+            di += coursedata[int(car_y[0]+i)%CMAX].curve
+            ud += coursedata[int(car_y[0]+i)%CMAX].updown
             board_x[i] = 400 - BOARD_W[i]*car_x[0]/800 + di/2
             board_ud[i] = ud/30
 
