@@ -23,7 +23,7 @@ class CompCar(Car):
 
 
 #CompCarクラスのリストを管理するCompCarListクラスを作成
-class CompCarList:
+class CarsList:
     #コンストラクタ
     def __init__(self):
         self.data = []
