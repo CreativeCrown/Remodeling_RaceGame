@@ -35,7 +35,7 @@ car_y = [0]*CAR #車のコース上の位置を管理するリスト
 car_lr = [0]*CAR    #車の左右の向きを管理するリスト
 car_spd = [0]*CAR   #車の速度を管理するリスト
 PLCAR_Y = 10        # プレイヤーの車の表示位置　道路一番手前（画面下）が0
-cars = CompCarList()
+cars = CarsList()
 cars.add(PlayerCar(400, 0, 0, 0))
 for i in range(1, CAR):
     cars.add(CompCar(random.randint(50, 750), random.randint(200, CMAX-200), 0, random.randint(100, 200)))
