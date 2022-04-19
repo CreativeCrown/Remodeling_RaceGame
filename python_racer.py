@@ -4,7 +4,8 @@ import math
 import random
 from pygame.locals import *
 from course import *
-from car import *
+from car import PlayerCar, CompCar, CarsList
+from infomaition import *
 
 WHITE = (255, 255, 255) #色の定義(白)
 BLACK = (0, 0, 0)       #色の定義(黒)
@@ -12,11 +13,11 @@ RED = (255, 0, 0)       #色の定義(赤)
 YELLOW = (255, 224, 0)  #色の定義(黄)
 GREEN = (0, 255, 0)     #色の定義(緑)
 
-idx = 0     #インデックスの変数
-tmr = 0     #タイマーの変数
-laps = 0    #何周目かを管理する変数
-rec = 0     #走行時間を測る変数
-recbk = 0   #ラップタイム計算用の変数
+idx = [0]     #インデックスの変数
+tmr = [0]     #タイマーの変数
+laps = [0]    #何周目かを管理する変数
+rec = [0]     #走行時間を測る変数
+recbk = [0]   #ラップタイム計算用の変数
 se_crash = None #衝突時の効果音を読み込む変数
 mycar = 0   #車種選択用の変数
 
@@ -36,7 +37,7 @@ car_lr = [0]*CAR    #車の左右の向きを管理するリスト
 car_spd = [0]*CAR   #車の速度を管理するリスト
 PLCAR_Y = 10        # プレイヤーの車の表示位置　道路一番手前（画面下）が0
 cars = CarsList()
-cars.add(PlayerCar(400, 0, 0, 0))
+cars.add(PlayerCar(400, 0, 0, 0, 10))
 for i in range(1, CAR):
     cars.add(CompCar(random.randint(50, 750), random.randint(200, CMAX-200), 0, random.randint(100, 200)))
 
@@ -82,55 +83,55 @@ def draw_shadow(bg, x, y, siz): #影を表示する関数
 #     car_spd[0] = 0  #プレイヤーの車の速度を0に
 
 
-def drive_car(key): #プレイヤーの車を操作、制御する関数
-    global idx, tmr, laps, recbk     #これらをグローバル変数とする
-    if key[K_LEFT] == 1:    #左キーが押されたら
-        if cars[0].lr > -3:  #向きが-3より大きければ
-            cars[0].lr -= 1  #向きを-1する(左に向かせる)
-        cars[0].x = cars[0].x + (cars[0].lr-3)*cars[0].spd/100 - 5  #車の横方向の座標を計算
-    elif key[K_RIGHT] == 1: #そうでなく右キーが押されたら
-        if cars[0].lr < 3:   #向きが3より小さければ
-            cars[0].lr += 1  #向きを+1する(右に向かせる)
-        cars[0].x = cars[0].x + (cars[0].lr+3)*cars[0].spd/100 + 5  #車の横方向の座標を計算
-    else:
-        cars[0].lr = int(cars[0].lr*0.9)  #正面向きに近づける
+# def drive_car(key): #プレイヤーの車を操作、制御する関数
+#     global idx, tmr, laps, recbk     #これらをグローバル変数とする
+#     if key[K_LEFT] == 1:    #左キーが押されたら
+#         if cars[0].lr > -3:  #向きが-3より大きければ
+#             cars[0].lr -= 1  #向きを-1する(左に向かせる)
+#         cars[0].x = cars[0].x + (cars[0].lr-3)*cars[0].spd/100 - 5  #車の横方向の座標を計算
+#     elif key[K_RIGHT] == 1: #そうでなく右キーが押されたら
+#         if cars[0].lr < 3:   #向きが3より小さければ
+#             cars[0].lr += 1  #向きを+1する(右に向かせる)
+#         cars[0].x = cars[0].x + (cars[0].lr+3)*cars[0].spd/100 + 5  #車の横方向の座標を計算
+#     else:
+#         cars[0].lr = int(cars[0].lr*0.9)  #正面向きに近づける
 
-    if key[K_a] == 1:   #Aキーが押されたら
-        cars[0].spd += 3 #速度を増やす
-    elif key[K_z] == 1: #そうでなくZキーが押されたら
-        cars[0].spd -= 10    #速度を減らす
-    else:   #そうでないなら
-        cars[0].spd -= 0.25  #ゆっくり減速
+#     if key[K_a] == 1:   #Aキーが押されたら
+#         cars[0].spd += 3 #速度を増やす
+#     elif key[K_z] == 1: #そうでなくZキーが押されたら
+#         cars[0].spd -= 10    #速度を減らす
+#     else:   #そうでないなら
+#         cars[0].spd -= 0.25  #ゆっくり減速
 
-    if cars[0].spd < 0:  #速度が0未満なら
-        cars[0].spd = 0  #速度を0にする
-    if cars[0].spd > 320:    #最高速度を超えたら
-        cars[0].spd = 320    #最高速度にする
+#     if cars[0].spd < 0:  #速度が0未満なら
+#         cars[0].spd = 0  #速度を0にする
+#     if cars[0].spd > 320:    #最高速度を超えたら
+#         cars[0].spd = 320    #最高速度にする
 
-    cars[0].x -= cars[0].spd*coursedata[int(cars[0].y+PLCAR_Y)%CMAX].curve/50  #車の速度と道の曲がりから横方向の座標を計算
-    if cars[0].x < 0:    #左の路肩に接触したら
-        cars[0].x = 0    #横方向の座標を0にし
-        cars[0].spd *= 0.9   #減速する
-    if cars[0].x > 800:  #右の路肩に接触したら
-        cars[0].x = 800  #横方向の座標を800にし
-        cars[0].spd *= 0.9   #減速する
+#     cars[0].x -= cars[0].spd*coursedata[int(cars[0].y+PLCAR_Y)%CMAX].curve/50  #車の速度と道の曲がりから横方向の座標を計算
+#     if cars[0].x < 0:    #左の路肩に接触したら
+#         cars[0].x = 0    #横方向の座標を0にし
+#         cars[0].spd *= 0.9   #減速する
+#     if cars[0].x > 800:  #右の路肩に接触したら
+#         cars[0].x = 800  #横方向の座標を800にし
+#         cars[0].spd *= 0.9   #減速する
 
-    cars[0].y = cars[0].y + cars[0].spd/100    #車の速度からコース上の位置を計算
-    if cars[0].y > CMAX-1:   #コース終点を越えたら
-        cars[0].y -= CMAX    #コースの頭に戻す
-        laptime[laps] = time_str(rec-recbk) #ラップタイムを計算し代入
-        recbk = rec #現在のタイムを保持
-        laps += 1   #周回数の値を1増やす
-        if laps == LAPS:    #周回数がLAPSの値になったら
-            idx = 3 #idxを3にしてゴール処理へ
-            tmr = 0 #tmrを0にする
+#     cars[0].y = cars[0].y + cars[0].spd/100    #車の速度からコース上の位置を計算
+#     if cars[0].y > CMAX-1:   #コース終点を越えたら
+#         cars[0].y -= CMAX    #コースの頭に戻す
+#         laptime[laps] = time_str(rec-recbk) #ラップタイムを計算し代入
+#         recbk = rec #現在のタイムを保持
+#         laps += 1   #周回数の値を1増やす
+#         if laps == LAPS:    #周回数がLAPSの値になったら
+#             idx = 3 #idxを3にしてゴール処理へ
+#             tmr = 0 #tmrを0にする
 
 
 def move_car(cs):   #コンピュータの車を制御する関数
     for i in range(cs, CAR):    #繰り返しで全ての車を処理する
         if cars[i].spd < 100:    #速度が100より小さいなら
             cars[i].spd += 3 #速度を増やす
-        if i == tmr%120:    #一定時間ごとに
+        if i == tmr[0]%120:    #一定時間ごとに
             cars[i].lr += random.choice([-1, 0, 1])  #向きをランダムに変える
             if cars[i].lr < -3:  cars[i].lr = -3  #向きが-3未満なら-3にする
             if cars[i].lr > 3:   cars[i].lr = 3   #向きが3を超えたら3にする
@@ -144,7 +145,7 @@ def move_car(cs):   #コンピュータの車を制御する関数
         cars[i].y += cars[i].spd/100  #車の速度からコース上の位置を計算
         if cars[i].y > CMAX-1:   #コース終点を越えたら
             cars[i].y -= CMAX    #コースの頭に戻す
-        if idx == 2:    #idxが2(レース中)ならヒットチェック
+        if idx[0] == 2:    #idxが2(レース中)ならヒットチェック
             cx = cars[i].x-cars[0].x  #プレイヤーの車との横方向の距離
             cy = cars[i].y-(cars[0].y+PLCAR_Y)%CMAX   #プレイヤーの車とのコース上の距離
             if -100 <= cx and cx <= 100 and -10 <= cy and cy <= 10: #それらがこの範囲内なら
@@ -237,7 +238,7 @@ def main(): #メイン処理を行う関数
                     screen = pygame.display.set_mode((800, 600), FULLSCREEN)    #フルスクリーンモードにする
                 if event.key == K_F2 or event.key == K_ESCAPE:  #F2キーかEscキーなら
                     screen = pygame.display.set_mode((800, 600))    #通常表示に戻す
-        tmr += 1    #tmrの値を1増やす
+        tmr[0] += 1    #tmrの値を1増やす
 
         #描画用の道路のX座標と路面の高低を計算
         di = 0  #道が曲がる向きを計算する変数
@@ -311,14 +312,14 @@ def main(): #メイン処理を行う関数
                 draw_obj(screen, img_car[3+cars[0].lr+mycar*7], ux+cars[0].x*BOARD_W[i]/800, uy, 0.05+BOARD_W[i]/BOARD_W[0])  #プレイヤーの車を描く
 
         draw_text(screen, str(int(cars[0].spd)) + "km/h", 680, 30, RED, fnt_m)   #速度を表示
-        draw_text(screen, "lap {}/{}".format(laps, LAPS), 100, 30, WHITE, fnt_m)    #周回数を表示
-        draw_text(screen, "time "+time_str(rec), 100, 80, GREEN, fnt_s) #タイムを表示
+        draw_text(screen, "lap {}/{}".format(laps[0], LAPS), 100, 30, WHITE, fnt_m)    #周回数を表示
+        draw_text(screen, "time "+time_str(rec[0]), 100, 80, GREEN, fnt_s) #タイムを表示
         for i in range(LAPS):   #繰り返しで
             draw_text(screen, laptime[i], 80, 130+40*i, YELLOW, fnt_s)  #ラップタイムを表示
 
         key = pygame.key.get_pressed()  #keyに全てのキーの状態を代入
         
-        if idx == 0:    #idxが0の時(タイトル画面)
+        if idx[0] == 0:    #idxが0の時(タイトル画面)
             screen.blit(img_title, [120, 120])  #タイトルロゴを表示
             draw_text(screen, "[A] Start game", 400, 320, WHITE, fnt_m) #[A] Start gameの文字を表示
             draw_text(screen, "[S] Select your car", 400, 400, WHITE, fnt_m)    #[S] Select your carの文字を表示
@@ -328,46 +329,47 @@ def main(): #メイン処理を行う関数
                 cars[0].x, cars[0].y, cars[0].lr, cars[0].spd = 400, 0, 0, 0
                 for i in range(0, CAR):
                     cars.add(CompCar(random.randint(50, 750), random.randint(200, CMAX-200), 0, random.randint(100, 200)))
-                idx = 1     #idxを1にしてカウントダウンに
-                tmr = 0 #タイマーを0に
-                laps = 0    #周回数を0に
-                rec = 0     #走行時間を0に
-                recbk = 0   #ラップタイム計算用の変数を0に
+                idx[0] = 1     #idxを1にしてカウントダウンに
+                tmr[0] = 0 #タイマーを0に
+                laps[0] = 0    #周回数を0に
+                rec[0] = 0     #走行時間を0に
+                recbk[0] = 0   #ラップタイム計算用の変数を0に
                 for i in range(LAPS):   #繰り返しで
                     laptime[i] = "0'00.00"  #ラップタイムを0'00.00に
             if key[K_s] != 0:   #Sキーが押されたら
-                idx = 4     #idxを4にして車種選択に移行
+                idx[0] = 4     #idxを4にして車種選択に移行
 
-        if idx == 1:    #idxが1の時(カウントダウン)
-            n = 3-int(tmr/60)   #カウントダウンの数を計算しnに代入
+        if idx[0] == 1:    #idxが1の時(カウントダウン)
+            n = 3-int(tmr[0]/60)   #カウントダウンの数を計算しnに代入
             draw_text(screen, str(n), 400, 240, YELLOW, fnt_l)  #その数を表示
-            if tmr == 179:  #tmrが179になったら
+            if tmr[0] == 179:  #tmrが179になったら
                 pygame.mixer.music.load("sound_pr/bgm.ogg") #BGMを読み込み
                 pygame.mixer.music.play(-1) #無限ループで出力
-                idx = 2     #idxを2にしてレースへ
-                tmr = 0 #tmrを0にする
+                idx[0] = 2     #idxを2にしてレースへ
+                tmr[0] = 0 #tmrを0にする
 
-        if idx == 2:    #idxが2の時(レース中)
-            if tmr < 60:    #60フレームの間
+        if idx[0] == 2:    #idxが2の時(レース中)
+            if tmr[0] < 60:    #60フレームの間
                 draw_text(screen, "Go!", 400, 240, RED, fnt_l)  #Go!と表示
-            rec = rec + 1/60    #走行時間をカウント
-            drive_car(key)  #プレイヤーの車を操作
+            rec[0] = rec[0] + 1/60    #走行時間をカウント
+            cars[0].drive_car(key, idx, tmr, recbk, rec, laps, laptime, CMAX, coursedata)  #プレイヤーの車を操作
             move_car(1) #COMカーを動かす
 
-        if idx == 3:    #idxが3の時(ゴール)
-            if tmr == 1:    #tmrが1なら
+
+        if idx[0] == 3:    #idxが3の時(ゴール)
+            if tmr[0] == 1:    #tmrが1なら
                 pygame.mixer.music.stop()   #BGMを停止
-            if tmr == 30:   #tmrが30になったら
+            if tmr[0] == 30:   #tmrが30になったら
                 pygame.mixer.music.load("sound_pr/goal.ogg")    #ジングルを読み込み
                 pygame.mixer.music.play(0)  #1回出力
             draw_text(screen, "GOAL!", 400, 240, GREEN, fnt_l)  #GOAL!の文字を表示
             cars[0].spd = cars[0].spd*0.96    #プレイヤーの車の速度を落とす
             cars[0].y = cars[0].y + cars[0].spd/100    #コース上を進ませる
             move_car(1) #COMカーを動かす
-            if tmr > 60*8:  #8秒経過したら
-                idx = 0 #idxを0にしてタイトルに戻る
+            if tmr[0] > 60*8:  #8秒経過したら
+                idx[0] = 0 #idxを0にしてタイトルに戻る
 
-        if idx == 4:    #idxが4の時(車種選択画面)
+        if idx[0] == 4:    #idxが4の時(車種選択画面)
             move_car(0) #全ての車を動かす
             draw_text(screen, "Select your car", 400, 160, WHITE, fnt_m)    #Select your carの文字を表示
             for i in range(3):  #繰り返しで
@@ -387,7 +389,7 @@ def main(): #メイン処理を行う関数
             if key[K_3] == 1:   #3キーが押されたら
                 mycar = 2   #mycarに2を代入(黄色の車)
             if key[K_RETURN] == 1:  #Enterキーが押されたら
-                idx = 0 #idxを0にしてタイトル画面に戻る
+                idx[0] = 0 #idxを0にしてタイトル画面に戻る
 
         pygame.display.update() #画面を更新する
         clock.tick(60)  #フレームレートを指定
