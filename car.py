@@ -1,4 +1,5 @@
 from pygame.locals import *
+import random
 
 def time_str(val):  #**'**.**という時間の文字列を作る関数
     sec = int(val)          #引数を整数の秒数にしてsecに代入
@@ -98,3 +99,31 @@ class CarsList:
     #セッター
     def __setitem__(self, key, value):
         self.data[key] = value
+
+    def move_car(self, cs, CAR, CMAX, tmr, idx, se_crash):   #コンピュータの車を制御する関数
+        for i in range(cs, CAR):    #繰り返しで全ての車を処理する
+            if self[i].spd < 100:    #速度が100より小さいなら
+                self[i].spd += 3 #速度を増やす
+            if i == tmr[0]%120:    #一定時間ごとに
+                self[i].lr += random.choice([-1, 0, 1])  #向きをランダムに変える
+                if self[i].lr < -3:  self[i].lr = -3  #向きが-3未満なら-3にする
+                if self[i].lr > 3:   self[i].lr = 3   #向きが3を超えたら3にする
+            self[i].x = self[i].x + self[i].lr*self[i].spd/100  #車の向きと速度から横方向の座標を計算
+            if self[i].x < 50:   #左の路肩に近づいたら
+                self[i].x = 50   #それ以上行かないようにし
+                self[i].lr = int(self[i].lr*0.9)  #正面向きに近づける
+            if self[i].x > 750:  #右の路肩に近づいたら
+                self[i].x = 750  #それ以上行かないようにし
+                self[i].lr = int(self[i].lr*0.9)  #正面向きに近づける
+            self[i].y += self[i].spd/100  #車の速度からコース上の位置を計算
+            if self[i].y > CMAX-1:   #コース終点を越えたら
+                self[i].y -= CMAX    #コースの頭に戻す
+            if idx[0] == 2:    #idxが2(レース中)ならヒットチェック
+                cx = self[i].x-self[0].x  #プレイヤーの車との横方向の距離
+                cy = self[i].y-(self[0].y+self[0].PLCAR_Y)%CMAX   #プレイヤーの車とのコース上の距離
+                if -100 <= cx and cx <= 100 and -10 <= cy and cy <= 10: #それらがこの範囲内なら
+                    #衝突時の座標変化、速度の入れ替えと減速
+                    self[0].x -= cx/4    #プレイヤーの車を横に移動
+                    self[i].x += cx/4    #コンピュータの車を横に移動
+                    self[0].spd, self[i].spd = self[i].spd*0.3, self[0].spd*0.3 #2つの車の速度を入れ替え減速
+                    se_crash.play() #衝突音を出力
