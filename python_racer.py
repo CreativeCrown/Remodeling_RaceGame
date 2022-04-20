@@ -6,6 +6,8 @@ from pygame.locals import *
 from course import *
 from car import Car, PlayerCar, CompCar, CarsList
 from infomaition import *
+from draw import *
+from road import *
 
 WHITE = (255, 255, 255) #色の定義(白)
 BLACK = (0, 0, 0)       #色の定義(黒)
@@ -29,6 +31,9 @@ BOARD = 120         #道路を描く板の枚数を定める定数
 CMAX = BOARD*CLEN   #コースの長さ(要素数)を定める定数
 object_left = [0]*CMAX  #道路左にある物体の番号を入れるリスト
 object_right = [0]*CMAX #道路右にある物体の番号を入れるリスト
+BOARD_W = [0]*BOARD #板の幅を代入するリスト
+BOARD_H = [0]*BOARD #板の高さを代入するリスト
+BOARD_UD = [0]*BOARD    #板の起伏用の値を代入するリスト
 
 CAR = 30        #車の数を定める定数
 car_x = [0]*CAR #車の横方向の座標を管理するリスト
@@ -46,124 +51,13 @@ LAPS = 3                    #何周すればゴールかを定める定数
 laptime = ["0'00.00"]*LAPS  #ラップタイム表示用のリスト
 
 coursedata = Course(CLEN, DATA_LR, DATA_UD)     #Courseクラスのオブジェクトを作成
-
+board = Board(BOARD, BOARD_W, BOARD_H, BOARD_UD)
 
 def time_str(val):  #**'**.**という時間の文字列を作る関数
     sec = int(val)          #引数を整数の秒数にしてsecに代入
     ms = int((val-sec)*100) #秒数の小数点以下の値をmsに代入
     mi = int(sec/60)        #分をmiに代入
     return "{}'{:02}.{:02}".format(mi, sec%60, ms)  #**'**.**という文字列を返す
-
-
-def draw_obj(bg, img, x, y, sc):    #座標とスケールを受け取り、物体を描く関数
-    img_rz = pygame.transform.rotozoom(img, 0, sc)  #拡大縮小した画像を作る
-    w = img_rz.get_width()          #その画像の幅をwに代入
-    h = img_rz.get_height()         #その画像の高さをhに代入
-    bg.blit(img_rz, [x-w/2, y-h])   #画像を描く
-
-
-def draw_shadow(bg, x, y, siz): #影を表示する関数
-    shadow = pygame.Surface([siz, siz/4])   #描画面(サーフェイス)を用意する
-    shadow.fill(RED)            #その描画面を赤で塗り潰す
-    shadow.set_colorkey(RED)    #描画面の透過色を指定
-    shadow.set_alpha(128)       #描画面の透明度を設定
-    pygame.draw.ellipse(shadow, BLACK, [0, 0, siz, siz/4])  #描画面に黒で楕円を描く
-    bg.blit(shadow, [x-siz/2, y-siz/4]) #楕円を描いた描画面をゲーム画面に転送
-
-
-# def init_car(): #車を管理するリストに初期値を代入する関数
-#     for i in range(1, CAR):                 #繰り返しでCOMカーの
-#         car_x[i] = random.randint(50, 750)  #横方向の座標をランダムに決める
-#         car_y[i] = random.randint(200, CMAX-200)    #コース上の位置をランダムに決める
-#         car_lr[i] = 0   #左右の向きを0に(正面向きにする)
-#         car_spd[i] = random.randint(100, 200)   #速度をランダムに決める
-#     car_x[0] = 400  #プレイヤーの車の横方向の座標を画面中央に
-#     car_y[0] = 0    #プレイヤーの車のコース上の位置を初期値に
-#     car_lr[0] = 0   #プレイヤーの車の向きを0に
-#     car_spd[0] = 0  #プレイヤーの車の速度を0に
-
-
-# def drive_car(key): #プレイヤーの車を操作、制御する関数
-#     global idx, tmr, laps, recbk     #これらをグローバル変数とする
-#     if key[K_LEFT] == 1:    #左キーが押されたら
-#         if cars[0].lr > -3:  #向きが-3より大きければ
-#             cars[0].lr -= 1  #向きを-1する(左に向かせる)
-#         cars[0].x = cars[0].x + (cars[0].lr-3)*cars[0].spd/100 - 5  #車の横方向の座標を計算
-#     elif key[K_RIGHT] == 1: #そうでなく右キーが押されたら
-#         if cars[0].lr < 3:   #向きが3より小さければ
-#             cars[0].lr += 1  #向きを+1する(右に向かせる)
-#         cars[0].x = cars[0].x + (cars[0].lr+3)*cars[0].spd/100 + 5  #車の横方向の座標を計算
-#     else:
-#         cars[0].lr = int(cars[0].lr*0.9)  #正面向きに近づける
-
-#     if key[K_a] == 1:   #Aキーが押されたら
-#         cars[0].spd += 3 #速度を増やす
-#     elif key[K_z] == 1: #そうでなくZキーが押されたら
-#         cars[0].spd -= 10    #速度を減らす
-#     else:   #そうでないなら
-#         cars[0].spd -= 0.25  #ゆっくり減速
-
-#     if cars[0].spd < 0:  #速度が0未満なら
-#         cars[0].spd = 0  #速度を0にする
-#     if cars[0].spd > 320:    #最高速度を超えたら
-#         cars[0].spd = 320    #最高速度にする
-
-#     cars[0].x -= cars[0].spd*coursedata[int(cars[0].y+PLCAR_Y)%CMAX].curve/50  #車の速度と道の曲がりから横方向の座標を計算
-#     if cars[0].x < 0:    #左の路肩に接触したら
-#         cars[0].x = 0    #横方向の座標を0にし
-#         cars[0].spd *= 0.9   #減速する
-#     if cars[0].x > 800:  #右の路肩に接触したら
-#         cars[0].x = 800  #横方向の座標を800にし
-#         cars[0].spd *= 0.9   #減速する
-
-#     cars[0].y = cars[0].y + cars[0].spd/100    #車の速度からコース上の位置を計算
-#     if cars[0].y > CMAX-1:   #コース終点を越えたら
-#         cars[0].y -= CMAX    #コースの頭に戻す
-#         laptime[laps] = time_str(rec-recbk) #ラップタイムを計算し代入
-#         recbk = rec #現在のタイムを保持
-#         laps += 1   #周回数の値を1増やす
-#         if laps == LAPS:    #周回数がLAPSの値になったら
-#             idx = 3 #idxを3にしてゴール処理へ
-#             tmr = 0 #tmrを0にする
-
-
-# def move_car(cs):   #コンピュータの車を制御する関数
-#     for i in range(cs, CAR):    #繰り返しで全ての車を処理する
-#         if cars[i].spd < 100:    #速度が100より小さいなら
-#             cars[i].spd += 3 #速度を増やす
-#         if i == tmr[0]%120:    #一定時間ごとに
-#             cars[i].lr += random.choice([-1, 0, 1])  #向きをランダムに変える
-#             if cars[i].lr < -3:  cars[i].lr = -3  #向きが-3未満なら-3にする
-#             if cars[i].lr > 3:   cars[i].lr = 3   #向きが3を超えたら3にする
-#         cars[i].x = cars[i].x + cars[i].lr*cars[i].spd/100  #車の向きと速度から横方向の座標を計算
-#         if cars[i].x < 50:   #左の路肩に近づいたら
-#             cars[i].x = 50   #それ以上行かないようにし
-#             cars[i].lr = int(cars[i].lr*0.9)  #正面向きに近づける
-#         if cars[i].x > 750:  #右の路肩に近づいたら
-#             cars[i].x = 750  #それ以上行かないようにし
-#             cars[i].lr = int(cars[i].lr*0.9)  #正面向きに近づける
-#         cars[i].y += cars[i].spd/100  #車の速度からコース上の位置を計算
-#         if cars[i].y > CMAX-1:   #コース終点を越えたら
-#             cars[i].y -= CMAX    #コースの頭に戻す
-#         if idx[0] == 2:    #idxが2(レース中)ならヒットチェック
-#             cx = cars[i].x-cars[0].x  #プレイヤーの車との横方向の距離
-#             cy = cars[i].y-(cars[0].y+PLCAR_Y)%CMAX   #プレイヤーの車とのコース上の距離
-#             if -100 <= cx and cx <= 100 and -10 <= cy and cy <= 10: #それらがこの範囲内なら
-#                 #衝突時の座標変化、速度の入れ替えと減速
-#                 cars[0].x -= cx/4    #プレイヤーの車を横に移動
-#                 cars[i].x += cx/4    #コンピュータの車を横に移動
-#                 cars[0].spd, cars[i].spd = cars[i].spd*0.3, cars[0].spd*0.3 #2つの車の速度を入れ替え減速
-#                 se_crash.play() #衝突音を出力
-
-        
-def draw_text(scrn, txt, x, y, col, fnt):   #影付きの文字列を表示する関数
-    sur = fnt.render(txt, True, BLACK)  #黒で文字列を描いたサーフェイスを生成
-    x -= sur.get_width()/2  #センタリングするためX座標を計算
-    y -= sur.get_height()/2 #センタリングするためY座標を計算
-    scrn.blit(sur, [x+2, y+2])  #サーフェイスを画面に転送
-    sur = fnt.render(txt, True, col)    #指定色で文字列を描いたサーフェイスを生成
-    scrn.blit(sur, [x, y])  #サーフェイスを画面に転送
-
 
 
 def main(): #メイン処理を行う関数
@@ -211,17 +105,19 @@ def main(): #メイン処理を行う関数
 
     se_crash = pygame.mixer.Sound("sound_pr/crash.ogg") #衝突音を読み込む
 
-    #道路の板の基本形状を計算
-    BOARD_W = [0]*BOARD #板の幅を代入するリスト
-    BOARD_H = [0]*BOARD #板の高さを代入するリスト
-    BOARD_UD = [0]*BOARD    #板の起伏用の値を代入するリスト
-    for i in range(BOARD):  #繰り返しで
-        BOARD_W[i] = 10+(BOARD-i)*(BOARD-i)/12  #幅を計算
-        BOARD_H[i] = 3.4*(BOARD-i)/BOARD    #高さを計算
-        BOARD_UD[i] = 2*math.sin(math.radians(i*1.5))   #起伏の値を三角関数で計算
+    # #道路の板の基本形状を計算
+    # BOARD_W = [0]*BOARD #板の幅を代入するリスト
+    # BOARD_H = [0]*BOARD #板の高さを代入するリスト
+    # BOARD_UD = [0]*BOARD    #板の起伏用の値を代入するリスト
+    # for i in range(BOARD):  #繰り返しで
+    #     BOARD_W[i] = 10+(BOARD-i)*(BOARD-i)/12  #幅を計算
+    #     BOARD_H[i] = 3.4*(BOARD-i)/BOARD    #高さを計算
+    #     BOARD_UD[i] = 2*math.sin(math.radians(i*1.5))   #起伏の値を三角関数で計算
+    board.roadbasic()
 
+    #コースを作成
     coursedata.make_course(BOARD, object_right, object_left)
-      #車を管理するリストに初期値を代入
+    #車を管理するリストに初期値を代入
     cars[0].x, cars[0].y, cars[0].lr, cars[0].spd = 400, 0, 0, 0
     for i in range(0, CAR):
         cars.add(CompCar(random.randint(50, 750), random.randint(200, CMAX-200), 0, random.randint(100, 200)))
