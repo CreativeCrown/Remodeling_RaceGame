@@ -4,7 +4,7 @@ import math
 import random
 from pygame.locals import *
 from course import *
-from car import PlayerCar, CompCar, CarsList
+from car import Car, PlayerCar, CompCar, CarsList
 from infomaition import *
 
 WHITE = (255, 255, 255) #色の定義(白)
@@ -127,33 +127,33 @@ def draw_shadow(bg, x, y, siz): #影を表示する関数
 #             tmr = 0 #tmrを0にする
 
 
-def move_car(cs):   #コンピュータの車を制御する関数
-    for i in range(cs, CAR):    #繰り返しで全ての車を処理する
-        if cars[i].spd < 100:    #速度が100より小さいなら
-            cars[i].spd += 3 #速度を増やす
-        if i == tmr[0]%120:    #一定時間ごとに
-            cars[i].lr += random.choice([-1, 0, 1])  #向きをランダムに変える
-            if cars[i].lr < -3:  cars[i].lr = -3  #向きが-3未満なら-3にする
-            if cars[i].lr > 3:   cars[i].lr = 3   #向きが3を超えたら3にする
-        cars[i].x = cars[i].x + cars[i].lr*cars[i].spd/100  #車の向きと速度から横方向の座標を計算
-        if cars[i].x < 50:   #左の路肩に近づいたら
-            cars[i].x = 50   #それ以上行かないようにし
-            cars[i].lr = int(cars[i].lr*0.9)  #正面向きに近づける
-        if cars[i].x > 750:  #右の路肩に近づいたら
-            cars[i].x = 750  #それ以上行かないようにし
-            cars[i].lr = int(cars[i].lr*0.9)  #正面向きに近づける
-        cars[i].y += cars[i].spd/100  #車の速度からコース上の位置を計算
-        if cars[i].y > CMAX-1:   #コース終点を越えたら
-            cars[i].y -= CMAX    #コースの頭に戻す
-        if idx[0] == 2:    #idxが2(レース中)ならヒットチェック
-            cx = cars[i].x-cars[0].x  #プレイヤーの車との横方向の距離
-            cy = cars[i].y-(cars[0].y+PLCAR_Y)%CMAX   #プレイヤーの車とのコース上の距離
-            if -100 <= cx and cx <= 100 and -10 <= cy and cy <= 10: #それらがこの範囲内なら
-                #衝突時の座標変化、速度の入れ替えと減速
-                cars[0].x -= cx/4    #プレイヤーの車を横に移動
-                cars[i].x += cx/4    #コンピュータの車を横に移動
-                cars[0].spd, cars[i].spd = cars[i].spd*0.3, cars[0].spd*0.3 #2つの車の速度を入れ替え減速
-                se_crash.play() #衝突音を出力
+# def move_car(cs):   #コンピュータの車を制御する関数
+#     for i in range(cs, CAR):    #繰り返しで全ての車を処理する
+#         if cars[i].spd < 100:    #速度が100より小さいなら
+#             cars[i].spd += 3 #速度を増やす
+#         if i == tmr[0]%120:    #一定時間ごとに
+#             cars[i].lr += random.choice([-1, 0, 1])  #向きをランダムに変える
+#             if cars[i].lr < -3:  cars[i].lr = -3  #向きが-3未満なら-3にする
+#             if cars[i].lr > 3:   cars[i].lr = 3   #向きが3を超えたら3にする
+#         cars[i].x = cars[i].x + cars[i].lr*cars[i].spd/100  #車の向きと速度から横方向の座標を計算
+#         if cars[i].x < 50:   #左の路肩に近づいたら
+#             cars[i].x = 50   #それ以上行かないようにし
+#             cars[i].lr = int(cars[i].lr*0.9)  #正面向きに近づける
+#         if cars[i].x > 750:  #右の路肩に近づいたら
+#             cars[i].x = 750  #それ以上行かないようにし
+#             cars[i].lr = int(cars[i].lr*0.9)  #正面向きに近づける
+#         cars[i].y += cars[i].spd/100  #車の速度からコース上の位置を計算
+#         if cars[i].y > CMAX-1:   #コース終点を越えたら
+#             cars[i].y -= CMAX    #コースの頭に戻す
+#         if idx[0] == 2:    #idxが2(レース中)ならヒットチェック
+#             cx = cars[i].x-cars[0].x  #プレイヤーの車との横方向の距離
+#             cy = cars[i].y-(cars[0].y+PLCAR_Y)%CMAX   #プレイヤーの車とのコース上の距離
+#             if -100 <= cx and cx <= 100 and -10 <= cy and cy <= 10: #それらがこの範囲内なら
+#                 #衝突時の座標変化、速度の入れ替えと減速
+#                 cars[0].x -= cx/4    #プレイヤーの車を横に移動
+#                 cars[i].x += cx/4    #コンピュータの車を横に移動
+#                 cars[0].spd, cars[i].spd = cars[i].spd*0.3, cars[0].spd*0.3 #2つの車の速度を入れ替え減速
+#                 se_crash.play() #衝突音を出力
 
         
 def draw_text(scrn, txt, x, y, col, fnt):   #影付きの文字列を表示する関数
@@ -323,7 +323,7 @@ def main(): #メイン処理を行う関数
             screen.blit(img_title, [120, 120])  #タイトルロゴを表示
             draw_text(screen, "[A] Start game", 400, 320, WHITE, fnt_m) #[A] Start gameの文字を表示
             draw_text(screen, "[S] Select your car", 400, 400, WHITE, fnt_m)    #[S] Select your carの文字を表示
-            move_car(0) #全ての車を動かす
+            cars.move_car(0, CAR, CMAX, tmr, idx, se_crash) #全ての車を動かす
             if key[K_a] != 0:   #Aキーが押されたら
                 #全ての車を初期位置に
                 cars[0].x, cars[0].y, cars[0].lr, cars[0].spd = 400, 0, 0, 0
@@ -353,7 +353,7 @@ def main(): #メイン処理を行う関数
                 draw_text(screen, "Go!", 400, 240, RED, fnt_l)  #Go!と表示
             rec[0] = rec[0] + 1/60    #走行時間をカウント
             cars[0].drive_car(key, idx, tmr, recbk, rec, laps, laptime, CMAX, coursedata)  #プレイヤーの車を操作
-            move_car(1) #COMカーを動かす
+            cars.move_car(1, CAR, CMAX, tmr, idx, se_crash) #COMカーを動かす
 
 
         if idx[0] == 3:    #idxが3の時(ゴール)
@@ -365,12 +365,12 @@ def main(): #メイン処理を行う関数
             draw_text(screen, "GOAL!", 400, 240, GREEN, fnt_l)  #GOAL!の文字を表示
             cars[0].spd = cars[0].spd*0.96    #プレイヤーの車の速度を落とす
             cars[0].y = cars[0].y + cars[0].spd/100    #コース上を進ませる
-            move_car(1) #COMカーを動かす
+            cars.move_car(1, CAR, CMAX, tmr, idx, se_crash) #COMカーを動かす
             if tmr[0] > 60*8:  #8秒経過したら
                 idx[0] = 0 #idxを0にしてタイトルに戻る
 
         if idx[0] == 4:    #idxが4の時(車種選択画面)
-            move_car(0) #全ての車を動かす
+            cars.move_car(0, CAR, CMAX, tmr, idx, se_crash) #全ての車を動かす
             draw_text(screen, "Select your car", 400, 160, WHITE, fnt_m)    #Select your carの文字を表示
             for i in range(3):  #繰り返しで
                 x = 160+240*i   #xに選択用の枠のX座標を代入
