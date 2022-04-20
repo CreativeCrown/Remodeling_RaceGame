@@ -105,22 +105,12 @@ def main(): #メイン処理を行う関数
 
     se_crash = pygame.mixer.Sound("sound_pr/crash.ogg") #衝突音を読み込む
 
-    # #道路の板の基本形状を計算
-    # BOARD_W = [0]*BOARD #板の幅を代入するリスト
-    # BOARD_H = [0]*BOARD #板の高さを代入するリスト
-    # BOARD_UD = [0]*BOARD    #板の起伏用の値を代入するリスト
-    # for i in range(BOARD):  #繰り返しで
-    #     BOARD_W[i] = 10+(BOARD-i)*(BOARD-i)/12  #幅を計算
-    #     BOARD_H[i] = 3.4*(BOARD-i)/BOARD    #高さを計算
-    #     BOARD_UD[i] = 2*math.sin(math.radians(i*1.5))   #起伏の値を三角関数で計算
-    board.roadbasic()
-
-    #コースを作成
-    coursedata.make_course(BOARD, object_right, object_left)
+    board.roadbasic()   #道路の板の基本形状を計算
+    coursedata.make_course(BOARD, object_right, object_left)    #コースを作成
     #車を管理するリストに初期値を代入
     cars[0].x, cars[0].y, cars[0].lr, cars[0].spd = 400, 0, 0, 0
-    for i in range(0, CAR):
-        cars.add(CompCar(random.randint(50, 750), random.randint(200, CMAX-200), 0, random.randint(100, 200)))
+    for i in range(1, CAR):
+        cars[i] = CompCar(random.randint(50, 750), random.randint(200, CMAX-200), 0, random.randint(100, 200))
 
     vertical = 0    #背景の横方向の位置を管理する変数
 
@@ -137,20 +127,22 @@ def main(): #メイン処理を行う関数
         tmr[0] += 1    #tmrの値を1増やす
 
         #描画用の道路のX座標と路面の高低を計算
-        di = 0  #道が曲がる向きを計算する変数
-        ud = 0  #道の起伏を計算する変数
+        di = [0]  #道が曲がる向きを計算する変数
+        ud = [0]  #道の起伏を計算する変数
         board_x = [0]*BOARD #板のX座標を計算するためのリスト
         board_ud = [0]*BOARD    #板の高低を計算し代入
-        for i in range(BOARD):  #繰り返しで
-            di += coursedata[int(cars[0].y+i)%CMAX].curve    #カーブデータから道の曲がりを計算
-            ud += coursedata[int(cars[0].y+i)%CMAX].updown   #起伏データから起伏を計算
-            board_x[i] = 400 - BOARD_W[i]*cars[0].x/800 + di/2  #板のX座標を計算し代入
-            board_ud[i] = ud/30 #板の高低を計算し代入
+        # for i in range(BOARD):  #繰り返しで
+        #     di[0] += coursedata[int(cars[0].y+i)%CMAX].curve    #カーブデータから道の曲がりを計算
+        #     ud[0] += coursedata[int(cars[0].y+i)%CMAX].updown   #起伏データから起伏を計算
+        #     board_x[i] = 400 - BOARD_W[i]*cars[0].x/800 + di/2  #板のX座標を計算し代入
+        #     board_ud[i] = ud/30 #板の高低を計算し代入
+        board.make_curve(di, board_x, coursedata, cars, CMAX)
+        board.make_updown(ud, board_ud, coursedata, cars, CMAX)
 
-        horizon = 400 + int(ud/3)   #地平線のY座標を計算しhorizonに代入
+        horizon = 400 + int(ud[0]/3)   #地平線のY座標を計算しhorizonに代入
         sy = horizon    #道路を描き始めるY座標をsyに代入
 
-        vertical = vertical - int(cars[0].spd*di/8000)   #背景の垂直位置を計算
+        vertical = vertical - int(cars[0].spd*di[0]/8000)   #背景の垂直位置を計算
         if vertical < 0:    #それが0未満になったら
             vertical += 800 #800を足す
         if vertical >= 800: #800以上になったら
