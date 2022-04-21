@@ -12,11 +12,14 @@ class Way:
 #Courseクラスの作成
 class Course:
     #Wayクラスのリストを格納するための変数を作成
-    def __init__(self, CLEN, DATA_LR, DATA_UD):
+    def __init__(self, CMAX, CLEN, DATA_LR, DATA_UD, object_left, object_right):
         self.data = []
+        self.CMAX = CMAX
         self.CLEN = CLEN
         self.DATA_LR = DATA_LR
         self.DATA_UD = DATA_UD
+        self.obl = object_left
+        self.obr = object_right
 
     #iterメソッド
     def __iter__(self):
@@ -45,12 +48,12 @@ class Course:
                 pos = j+BOARD*i     #リストの添え字を計算しposに代入
                 self.add(Way(lr1*(BOARD-j)/BOARD + lr2*j/BOARD, ud1*(BOARD-j)/BOARD + ud2*j/BOARD)) #coursedataに道の曲がる向きと起伏を計算しリストに追加
                 if j == 60: #繰り返しの変数jが60なら
-                    object_right[pos] = 1   #道路右側に看板を置く
+                    self.obr[pos] = 1   #道路右側に看板を置く
                 if i%8 < 7: #繰り返しの変数i%8<7の時
                     if j%12 == 0:   #j%12が0の時に
-                        object_left[pos] = 2    #ヤシの木を置く
+                        self.obl[pos] = 2    #ヤシの木を置く
                 else:   #そうでなければ
                     if j%20 == 0:   #j%20が0の時に
-                        object_left[pos] = 3    #ヨットを置く
+                        self.obl[pos] = 3    #ヨットを置く
                 if j%12 == 6:   #j%12が6の時に
-                    object_left[pos] = 9    #海を置く
+                    self.obl[pos] = 9    #海を置く
