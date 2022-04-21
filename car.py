@@ -1,11 +1,12 @@
 from pygame.locals import *
+from infomaition import *
 import random
 
-def time_str(val):  #**'**.**という時間の文字列を作る関数
-    sec = int(val)          #引数を整数の秒数にしてsecに代入
-    ms = int((val-sec)*100) #秒数の小数点以下の値をmsに代入
-    mi = int(sec/60)        #分をmiに代入
-    return "{}'{:02}.{:02}".format(mi, sec%60, ms)  #**'**.**という文字列を返す
+# def time_str(val):  #**'**.**という時間の文字列を作る関数
+#     sec = int(val)          #引数を整数の秒数にしてsecに代入
+#     ms = int((val-sec)*100) #秒数の小数点以下の値をmsに代入
+#     mi = int(sec/60)        #分をmiに代入
+#     return "{}'{:02}.{:02}".format(mi, sec%60, ms)  #**'**.**という文字列を返す
 
 #Carクラスの作成
 class Car:
@@ -20,9 +21,10 @@ class Car:
 #Carクラスを継承したPlayerCarクラスを作成
 class PlayerCar(Car):
     #コンストラクタ
-    def __init__(self, x, y, lr, spd, PLCAR_Y):
+    def __init__(self, x, y, lr, spd, PLCAR_Y, mycar):
         super().__init__(x, y, lr, spd)
         self.PLCAR_Y = PLCAR_Y
+        self.mycar = mycar
 
 
 
@@ -81,8 +83,9 @@ class CompCar(Car):
 #CompCarクラスのリストを管理するCompCarListクラスを作成
 class CarsList:
     #コンストラクタ
-    def __init__(self):
+    def __init__(self, CAR):
         self.data = []
+        self.CAR = CAR
 
     #イテレータ
     def __iter__(self):
@@ -100,8 +103,8 @@ class CarsList:
     def __setitem__(self, key, value):
         self.data[key] = value
 
-    def move_car(self, cs, CAR, CMAX, tmr, idx, se_crash):   #コンピュータの車を制御する関数
-        for i in range(cs, CAR):    #繰り返しで全ての車を処理する
+    def move_car(self, cs, CMAX, tmr, idx, se_crash):   #コンピュータの車を制御する関数
+        for i in range(cs, self.CAR):    #繰り返しで全ての車を処理する
             if self[i].spd < 100:    #速度が100より小さいなら
                 self[i].spd += 3 #速度を増やす
             if i == tmr[0]%120:    #一定時間ごとに
