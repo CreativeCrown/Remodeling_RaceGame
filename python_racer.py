@@ -158,8 +158,8 @@ def main(): #メイン処理を行う関数
             draw.draw_text(coursedata.laptime[i], 80, 130+40*i, YELLOW, fnt_s)  #ラップタイムを表示
 
         key = pygame.key.get_pressed()  #keyに全てのキーの状態を代入
-        transi.game_trandition(cars, coursedata, draw, img_title, img_car, se_crash, rec, recbk, key)
-        
+        transi.game_transition(cars, coursedata, draw, img_title, img_car, se_crash, rec, recbk, key)
+
         pygame.display.update() #画面を更新する
         clock.tick(60)  #フレームレートを指定
 
