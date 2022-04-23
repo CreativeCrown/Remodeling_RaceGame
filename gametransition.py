@@ -7,7 +7,7 @@ class Transition:
         self.idx = idx
         self.tmr = tmr
 
-    def game_trandition(self, cars, coursedata, draw, img_title, img_car, se_crash, rec, recbk, key):
+    def game_transition(self, cars, coursedata, draw, img_title, img_car, se_crash, rec, recbk, key):
         if self.idx == 0:    #idxが0の時(タイトル画面)
             draw.screen.blit(img_title, [120, 120])  #タイトルロゴを表示
             draw.draw_text("[A] Start game", 400, 320, draw.WHITE, draw.fnt_m) #[A] Start gameの文字を表示
