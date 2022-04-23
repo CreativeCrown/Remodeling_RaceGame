@@ -1,15 +1,18 @@
 import pygame
 
-WHITE = (255, 255, 255)  # 色の定義(白)
-BLACK = (0, 0, 0)  # 色の定義(黒)
-RED = (255, 0, 0)  # 色の定義(赤)
-YELLOW = (255, 224, 0)  # 色の定義(黄)
-GREEN = (0, 255, 0)  # 色の定義(緑)
-
 class Draw: #描画用クラス
     #コンストラクタ
-    def __init__(self, screen):
+    def __init__(self, screen, fnt_s, fnt_m, fnt_l):
         self.screen = screen
+        self.WHITE = (255, 255, 255)
+        self.BLACK = (0, 0, 0)
+        self.RED = (255, 0, 0)
+        self.YELLOW = (255, 224, 0)
+        self.GREEN = (0, 255, 0)
+        self.fnt_s = fnt_s
+        self.fnt_m = fnt_m
+        self.fnt_l = fnt_l
+
 
     def draw_obj(self, img, x, y, sc):  # 座標とスケールを受け取り、物体を描く関数
         img_rz = pygame.transform.rotozoom(img, 0, sc)  # 拡大縮小した画像を作る
@@ -20,15 +23,15 @@ class Draw: #描画用クラス
 
     def draw_shadow(self, x, y, siz):  # 影を表示する関数
         shadow = pygame.Surface([siz, siz/4])  # 描画面(サーフェイス)を用意する
-        shadow.fill(RED)  # その描画面を赤で塗り潰す
-        shadow.set_colorkey(RED)  # 描画面の透過色を指定
+        shadow.fill(self.RED)  # その描画面を赤で塗り潰す
+        shadow.set_colorkey(self.RED)  # 描画面の透過色を指定
         shadow.set_alpha(128)  # 描画面の透明度を設定
-        pygame.draw.ellipse(shadow, BLACK, [0, 0, siz, siz/4])  # 描画面に黒で楕円を描く
+        pygame.draw.ellipse(shadow, self.BLACK, [0, 0, siz, siz/4])  # 描画面に黒で楕円を描く
         self.screen.blit(shadow, [x-siz/2, y-siz/4])  # 楕円を描いた描画面をゲーム画面に転送
 
 
     def draw_text(self, txt, x, y, col, fnt):  # 影付きの文字列を表示する関数
-        sur = fnt.render(txt, True, BLACK)  # 黒で文字列を描いたサーフェイスを生成
+        sur = fnt.render(txt, True, self.BLACK)  # 黒で文字列を描いたサーフェイスを生成
         x -= sur.get_width()/2  # センタリングするためX座標を計算
         y -= sur.get_height()/2  # センタリングするためY座標を計算
         self.screen.blit(sur, [x+2, y+2])  # サーフェイスを画面に転送
@@ -53,16 +56,16 @@ class Draw: #描画用クラス
                 self.screen, col, [[ux, uy], [ux+uw, uy], [bx+bw, by], [bx, by]])  # 道路の板を描く
 
             if int(cars[0].y+i) % 10 <= 4:  # 一定間隔で
-                pygame.draw.polygon(self.screen, YELLOW, [[ux, uy], [
+                pygame.draw.polygon(self.screen, self.YELLOW, [[ux, uy], [
                                     ux+uw*0.02, uy], [bx+bw*0.02, by], [bx, by]])  # 道路左の黄色いラインを描く
-                pygame.draw.polygon(self.screen, YELLOW, [
+                pygame.draw.polygon(self.screen, self.YELLOW, [
                                     [ux+uw*0.98, uy], [ux+uw, uy], [bx+bw, by], [bx+bw*0.98, by]])  # 道路右の黄色いラインを描く
             if int(cars[0].y+i) % 20 <= 10:  # 一定間隔で
-                pygame.draw.polygon(self.screen, WHITE, [
+                pygame.draw.polygon(self.screen, self.WHITE, [
                                     [ux+uw*0.24, uy], [ux+uw*0.26, uy], [bx+bw*0.26, by], [bx+bw*0.24, by]])  # 左側の白ラインを描く
-                pygame.draw.polygon(self.screen, WHITE, [
+                pygame.draw.polygon(self.screen, self.WHITE, [
                                     [ux+uw*0.49, uy], [ux+uw*0.51, uy], [bx+bw*0.51, by], [bx+bw*0.49, by]])  # 中央の白ラインを描く
-                pygame.draw.polygon(self.screen, WHITE, [
+                pygame.draw.polygon(self.screen, self.WHITE, [
                                     [ux+uw*0.74, uy], [ux+uw*0.76, uy], [bx+bw*0.76, by], [bx+bw*0.74, by]])  # 右側の白ラインを描く
 
             scale = 1.5*board.BOARD_W[i]/board.BOARD_W[0]  # 道路横の物体のスケールを計算
