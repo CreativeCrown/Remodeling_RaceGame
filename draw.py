@@ -99,3 +99,10 @@ class Draw: #描画用クラス
                             800, uy, 200*board.BOARD_W[i]/board.BOARD_W[0])  # 車の影を描き
                 self.draw_obj(img_car[3+cars[0].lr+cars[0].mycar*7], ux+cars[0].x *
                         board.BOARD_W[i]/800, uy, 0.05+board.BOARD_W[i]/board.BOARD_W[0])  # プレイヤーの車を描く
+
+
+def time_str(val):  #**'**.**という時間の文字列を作る関数
+    sec = int(val)          #引数を整数の秒数にしてsecに代入
+    ms = int((val-sec)*100) #秒数の小数点以下の値をmsに代入
+    mi = int(sec/60)        #分をmiに代入
+    return "{}'{:02}.{:02}".format(mi, sec%60, ms)  #**'**.**という文字列を返す
