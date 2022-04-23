@@ -12,11 +12,13 @@ class Way:
 #Courseクラスの作成
 class Course:
     #Wayクラスのリストを格納するための変数を作成
-    def __init__(self, CMAX, CLEN, LAPS, DATA_LR, DATA_UD, object_left, object_right, ):
+    def __init__(self, CMAX, CLEN, LAPS, laps, laptime, DATA_LR, DATA_UD, object_left, object_right, ):
         self.data = []
         self.CMAX = CMAX
         self.CLEN = CLEN
         self.LAPS = LAPS
+        self.laps = laps
+        self.laptime = laptime
         self.DATA_LR = DATA_LR
         self.DATA_UD = DATA_UD
         self.obl = object_left
