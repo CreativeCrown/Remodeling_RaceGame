@@ -9,12 +9,12 @@ class Transition:
         self.idx = idx  #画面遷移用インデックス
         self.tmr = tmr  #タイマー
 
-    def game_transition(self, cars, cdata, d_item, img_title, img_car, se_crash, rec, recbk, key):
+    def game_transition(self, cars, cdata, d_item, board, img_title, img_car, se_crash, rec, recbk, key):
         if self.idx == 0:    #idxが0の時(タイトル画面)
             d_item.screen.blit(img_title, [120, 120])  #タイトルロゴを表示
             d_item.draw_text("[A] Start game", 400, 320, d_item.WHITE, d_item.fnt_m) #[A] Start gameの文字を表示
             d_item.draw_text("[S] Select your car", 400, 400, d_item.WHITE, d_item.fnt_m)    #[S] Select your carの文字を表示
-            cars.move_car(0, cdata.CMAX, self, se_crash) #全ての車を動かす
+            cars.move_car(0, cdata.CMAX, board, self, se_crash) #全ての車を動かす
             if key[K_a] != 0:   #Aキーが押されたら
                 #全ての車を初期位置に
                 cars[0].x, cars[0].y, cars[0].lr, cars[0].spd = 400, 0, 0, 0
@@ -43,8 +43,8 @@ class Transition:
             if self.tmr < 60:    #60フレームの間
                 d_item.draw_text("Go!", 400, 240, d_item.RED, d_item.fnt_l)  #Go!と表示
             rec[0] = rec[0] + 1/60    #走行時間をカウント
-            cars[0].drive_car(key, self, recbk, rec, cdata)  #プレイヤーの車を操作
-            cars.move_car(1, cdata.CMAX, self, se_crash) #COMカーを動かす
+            cars[0].drive_car(key, self, recbk, rec, cdata, board)  #プレイヤーの車を操作
+            cars.move_car(1, cdata.CMAX, board, self, se_crash) #COMカーを動かす
 
 
         if self.idx == 3:    #idxが3の時(ゴール)
@@ -56,12 +56,12 @@ class Transition:
             d_item.draw_text("GOAL!", 400, 240, d_item.GREEN, d_item.fnt_l)  #GOAL!の文字を表示
             cars[0].spd = cars[0].spd*0.96    #プレイヤーの車の速度を落とす
             cars[0].y = cars[0].y + cars[0].spd/100    #コース上を進ませる
-            cars.move_car(1, cdata.CMAX, self, se_crash) #COMカーを動かす
+            cars.move_car(1, cdata.CMAX, board, self, se_crash) #COMカーを動かす
             if self.tmr > 60*8:  #8秒経過したら
                 self.idx = 0 #idxを0にしてタイトルに戻る
 
         if self.idx == 4:    #idxが4の時(車種選択画面)
-            cars.move_car(0, cdata.CMAX, self, se_crash) #全ての車を動かす
+            cars.move_car(0, cdata.CMAX, board, self, se_crash) #全ての車を動かす
             d_item.draw_text("Select your car", 400, 160, d_item.WHITE, d_item.fnt_m)    #Select your carの文字を表示
             for i in range(3):  #繰り返しで
                 x = 160+240*i   #xに選択用の枠のX座標を代入
