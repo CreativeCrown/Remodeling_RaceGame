@@ -3,15 +3,31 @@ import pygame
 class Draw: #描画用クラス
     #コンストラクタ
     def __init__(self, screen, fnt_s, fnt_m, fnt_l):
-        self.screen = screen
-        self.WHITE = (255, 255, 255)
-        self.BLACK = (0, 0, 0)
-        self.RED = (255, 0, 0)
-        self.YELLOW = (255, 224, 0)
-        self.GREEN = (0, 255, 0)
-        self.fnt_s = fnt_s
-        self.fnt_m = fnt_m
-        self.fnt_l = fnt_l
+        self.screen = screen    #スクリーンの大きさ
+        self.vertical = 0    #背景の水平方向
+        self.horizon = 0      #背景の垂直方向
+        self.sy = 0         #背景のY座標
+        self.WHITE = (255, 255, 255)    #白色
+        self.BLACK = (0, 0, 0)          #黒色
+        self.RED = (255, 0, 0)          #赤色
+        self.YELLOW = (255, 224, 0)     #黄色
+        self.GREEN = (0, 255, 0)        #緑色
+        self.fnt_s = fnt_s      #Sサイズフォント
+        self.fnt_m = fnt_m      #Mサイズフォント
+        self.fnt_l = fnt_l      #Lサイズフォント
+
+    
+    def make_horizon(self, board):    #背景の垂直を計算するメソッド
+        self.horizon = 400 + int(board.ud/3)   #地平線のY座標を計算しhorizonに代入
+        #self.sy = self.horizon      #道路を描き始めるY座標をsyに代入
+
+    
+    def make_vertical(self, cars, board):   #背景の水平を計算するメソッド
+        self.vertical = self.vertical - int(cars[0].spd*board.di/8000)   #背景の垂直位置を計算
+        if self.vertical < 0:    #それが0未満になったら
+            self.vertical += 800 #800を足す
+        if self.vertical >= 800: #800以上になったら
+            self.vertical -= 800 #800を引く
 
 
     def draw_obj(self, img, x, y, sc):  # 座標とスケールを受け取り、物体を描く関数
@@ -39,18 +55,18 @@ class Draw: #描画用クラス
         self.screen.blit(sur, [x, y])  # サーフェイスを画面に転送
 
 
-    def draw_road(self, board, cars, coursedata, img_obj, img_sea, img_car, horizon):  # 描画用データをもとに道路を描くメソッド
-        sy = horizon    #道路を描き始めるY座標をsyに代入
+    def draw_road(self, board, cars, cdata, img_obj, img_sea, img_car):  # 描画用データをもとに道路を描くメソッド
+        # self.sy = self.horizon    #道路を描き始めるY座標をsyに代入
         for i in range(board.BOARD-1, 0, -1):  # 繰り返しで道路の板を描いていく
             ux = board.board_x[i]  # 台形の上底のX座標をuxに代入
-            uy = sy - board.BOARD_UD[i]*board.board_ud[i]  # 上底のY座標をuyに代入
+            uy = self.sy - board.BOARD_UD[i]*board.board_ud[i]  # 上底のY座標をuyに代入
             uw = board.BOARD_W[i]  # 上底の幅をuwに代入
-            sy = sy + board.BOARD_H[i]*(600-horizon)/200  # 台形を描くY座標を次の値にする
+            self.sy = self.sy + board.BOARD_H[i]*(600-self.horizon)/200  # 台形を描くY座標を次の値にする
             bx = board.board_x[i-1]  # 台形の下底のX座標をbxに代入
-            by = sy - board.BOARD_UD[i-1]*board.board_ud[i-1]  # 下底のY座標をbyに代入
+            by = self.sy - board.BOARD_UD[i-1]*board.board_ud[i-1]  # 下底のY座標をbyに代入
             bw = board.BOARD_W[i-1]  # 下底の幅をbwに代入
             col = (160, 160, 160)  # colに板の色を代入
-            if int(cars[0].y+i) % coursedata.CMAX == cars[0].PLCAR_Y+10:  # ゴールの位置なら
+            if int(cars[0].y+i) % cdata.CMAX == cars[0].PLCAR_Y+10:  # ゴールの位置なら
                 col = (192, 0, 0)  # 赤線の色の値を代入
             pygame.draw.polygon(
                 self.screen, col, [[ux, uy], [ux+uw, uy], [bx+bw, by], [bx, by]])  # 道路の板を描く
@@ -69,7 +85,7 @@ class Draw: #描画用クラス
                                     [ux+uw*0.74, uy], [ux+uw*0.76, uy], [bx+bw*0.76, by], [bx+bw*0.74, by]])  # 右側の白ラインを描く
 
             scale = 1.5*board.BOARD_W[i]/board.BOARD_W[0]  # 道路横の物体のスケールを計算
-            obj_l = coursedata.obl[int(cars[0].y+i) % coursedata.CMAX]  # obj_lに左側の物体の番号を代入
+            obj_l = cdata.obl[int(cars[0].y+i) % cdata.CMAX]  # obj_lに左側の物体の番号を代入
             if obj_l == 2:  # ヤシの木なら
                 self.draw_obj(img_obj[obj_l], ux -
                         uw*0.05, uy, scale)  # その画像を描画
@@ -78,13 +94,13 @@ class Draw: #描画用クラス
                         uw*0.5, uy, scale)  # その画像を描画
             if obj_l == 9:  # 海なら
                 self.screen.blit(img_sea, [ux-uw*0.5-780, uy])  # その画像を描画
-            obj_r = coursedata.obr[int(cars[0].y+i) % coursedata.CMAX]  # obj_rに右側の物体の番号を代入
+            obj_r = cdata.obr[int(cars[0].y+i) % cdata.CMAX]  # obj_rに右側の物体の番号を代入
             if obj_r == 1:  # 看板なら
                 self.draw_obj(img_obj[obj_r], ux +
                         uw*1.3, uy, scale)  # その画像を描画
 
             for c in range(1, cars.CAR):  # 繰り返しで
-                if int(cars[c].y) % coursedata.CMAX == int(cars[0].y+i) % coursedata.CMAX:  # その板にCOMカーがあるか調べ
+                if int(cars[c].y) % cdata.CMAX == int(cars[0].y+i) % cdata.CMAX:  # その板にCOMカーがあるか調べ
                     # プレイヤーから見たCOMカーの向きを計算し
                     lr = int(4*(cars[0].x-cars[c].x)/800)
                     if lr < -3:
@@ -95,10 +111,10 @@ class Draw: #描画用クラス
                             board.BOARD_W[i]/800, uy, 0.05+board.BOARD_W[i]/board.BOARD_W[0])  # COMカーを描く
 
             if i == cars[0].PLCAR_Y:  # プレイヤーの車の位置なら
-                self.draw_shadow(ux+cars[0].x*board.BOARD_W[i] /
-                            800, uy, 200*board.BOARD_W[i]/board.BOARD_W[0])  # 車の影を描き
-                self.draw_obj(img_car[3+cars[0].lr+cars[0].mycar*7], ux+cars[0].x *
-                        board.BOARD_W[i]/800, uy, 0.05+board.BOARD_W[i]/board.BOARD_W[0])  # プレイヤーの車を描く
+                self.draw_shadow(ux+cars[0].x*board.BOARD_W[i] / 800,
+                                        uy, 200*board.BOARD_W[i]/board.BOARD_W[0])  # 車の影を描き
+                self.draw_obj(img_car[3+cars[0].lr+cars[0].mycar*7], ux+cars[0].x * board.BOARD_W[i]/800,
+                                        uy, 0.05+board.BOARD_W[i]/board.BOARD_W[0])  # プレイヤーの車を描く
 
 
 def time_str(val):  #**'**.**という時間の文字列を作る関数
