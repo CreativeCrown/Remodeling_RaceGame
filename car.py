@@ -12,6 +12,12 @@ class Car:
         self.lr = lr    #車の左右の向き
         self.spd = spd  #車の速度
 
+    def spd_updown(self, board):    #道の起伏によって車の速度を変えるメソッド
+        if board.ud < 0:    #道が下り坂の時
+            self.spd = self.spd - int(0.009 * board.ud) #速度を上げる
+        elif board.ud > 0:  #道が上り坂の時
+            self.spd = self.spd - int(0.009 * board.ud) #速度を下げる
+
 
 #Carクラスを継承したPlayerCarクラスを作成
 class PlayerCar(Car):
@@ -22,8 +28,7 @@ class PlayerCar(Car):
         self.mycar = mycar  #選択している車の種類
 
 
-
-    def drive_car(self, key, transi, recbk, rec, cdata): #プレイヤーの車を操作、制御する関数
+    def drive_car(self, key, transi, recbk, rec, cdata, board): #プレイヤーの車を操作、制御する関数
         #global idx, tmr, laps, recbk     #これらをグローバル変数とする
         if key[K_LEFT] == 1:    #左キーが押されたら
             if self.lr > -3:  #向きが-3より大きければ
@@ -65,6 +70,7 @@ class PlayerCar(Car):
             if cdata.laps == 3:    #周回数がLAPSの値になったら
                 transi.idx = 3 #idxを3にしてゴール処理へ
                 transi.tmr = 0 #tmrを0にする
+        self.spd_updown(board)
 
 
 
@@ -76,7 +82,7 @@ class CompCar(Car):
 
 
 #CompCarクラスのリストを管理するCompCarListクラスを作成
-class CarsList:
+class CarsList(Car):
     #コンストラクタ
     def __init__(self, CAR):
         self.data = []  #車のインスタンスを管理するリスト
@@ -98,8 +104,10 @@ class CarsList:
     def __setitem__(self, key, value):
         self.data[key] = value
 
-    def move_car(self, cs, CMAX, transi, se_crash):   #コンピュータの車を制御する関数
+    def move_car(self, cs, CMAX, board, transi, se_crash):   #コンピュータの車を制御する関数
         for i in range(cs, self.CAR):    #繰り返しで全ての車を処理する
+            if self[i].spd > 200:   #速度が200より大きいなら
+                self[i].spd = 200
             if self[i].spd < 100:    #速度が100より小さいなら
                 self[i].spd += 3 #速度を増やす
             if i == transi.tmr%120:    #一定時間ごとに
@@ -125,3 +133,4 @@ class CarsList:
                     self[i].x += cx/4    #コンピュータの車を横に移動
                     self[0].spd, self[i].spd = self[i].spd*0.3, self[0].spd*0.3 #2つの車の速度を入れ替え減速
                     se_crash.play() #衝突音を出力
+            self[i].spd_updown(board)   #道の起伏で車の速度を変更するメソッド
