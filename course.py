@@ -61,3 +61,27 @@ class Course:
                         self.obl[pos] = 3    #ヨットを置く
                 if j%12 == 6:   #j%12が6の時に
                     self.obl[pos] = 9    #海を置く
+
+
+class Course_type:  #コースの種類をもつクラス
+    #コンストラクタ
+    def __init__(self):
+        self.type = []  #Courseクラスのインスタンスを格納するリスト
+
+    #追加メソッド
+    def add(self, course):
+        self.type.append(course)
+
+    
+    #ゲッター
+    def __getitem__(self, key):
+        return self.data[key]
+
+    
+    #セッター
+    def __setitem__(self, key, value):
+        self.data[key] = value
+
+    
+    
+
