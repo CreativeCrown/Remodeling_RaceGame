@@ -2,33 +2,28 @@ from pygame.locals import *
 import random
 import draw
 
-# def time_str(val):  #**'**.**という時間の文字列を作る関数
-#     sec = int(val)          #引数を整数の秒数にしてsecに代入
-#     ms = int((val-sec)*100) #秒数の小数点以下の値をmsに代入
-#     mi = int(sec/60)        #分をmiに代入
-#     return "{}'{:02}.{:02}".format(mi, sec%60, ms)  #**'**.**という文字列を返す
 
 #Carクラスの作成
 class Car:
     #コンストラクタ
     def __init__(self, x, y, lr, spd):
-        self.x = x
-        self.y = y
-        self.lr = lr
-        self.spd = spd
+        self.x = x  #車のX座標
+        self.y = y  #車のY座標
+        self.lr = lr    #車の左右の向き
+        self.spd = spd  #車の速度
 
 
 #Carクラスを継承したPlayerCarクラスを作成
 class PlayerCar(Car):
     #コンストラクタ
     def __init__(self, x, y, lr, spd, PLCAR_Y, mycar):
-        super().__init__(x, y, lr, spd)
-        self.PLCAR_Y = PLCAR_Y
-        self.mycar = mycar
+        super().__init__(x, y, lr, spd) #Carクラスのコンストラクタを使用
+        self.PLCAR_Y = PLCAR_Y  #車の表示位置
+        self.mycar = mycar  #選択している車の種類
 
 
 
-    def drive_car(self, key, transi, recbk, rec, coursedata): #プレイヤーの車を操作、制御する関数
+    def drive_car(self, key, transi, recbk, rec, cdata): #プレイヤーの車を操作、制御する関数
         #global idx, tmr, laps, recbk     #これらをグローバル変数とする
         if key[K_LEFT] == 1:    #左キーが押されたら
             if self.lr > -3:  #向きが-3より大きければ
@@ -53,7 +48,7 @@ class PlayerCar(Car):
         if self.spd > 320:    #最高速度を超えたら
             self.spd = 320    #最高速度にする
 
-        self.x -= self.spd*coursedata[int(self.y+self.PLCAR_Y)%coursedata.CMAX].curve/50  #車の速度と道の曲がりから横方向の座標を計算
+        self.x -= self.spd*cdata[int(self.y+self.PLCAR_Y)%cdata.CMAX].curve/50  #車の速度と道の曲がりから横方向の座標を計算
         if self.x < 0:    #左の路肩に接触したら
             self.x = 0    #横方向の座標を0にし
             self.spd *= 0.9   #減速する
@@ -62,12 +57,12 @@ class PlayerCar(Car):
             self.spd *= 0.9   #減速する
 
         self.y = self.y + self.spd/100    #車の速度からコース上の位置を計算
-        if self.y > coursedata.CMAX-1:   #コース終点を越えたら
-            self.y -= coursedata.CMAX    #コースの頭に戻す
-            coursedata.laptime[coursedata.laps] = draw.time_str(rec[0]-recbk[0]) #ラップタイムを計算し代入
+        if self.y > cdata.CMAX-1:   #コース終点を越えたら
+            self.y -= cdata.CMAX    #コースの頭に戻す
+            cdata.laptime[cdata.laps] = draw.time_str(rec[0]-recbk[0]) #ラップタイムを計算し代入
             recbk[0] = rec[0] #現在のタイムを保持
-            coursedata.laps = coursedata.laps + 1   #周回数の値を1増やす
-            if coursedata.laps == 3:    #周回数がLAPSの値になったら
+            cdata.laps = cdata.laps + 1   #周回数の値を1増やす
+            if cdata.laps == 3:    #周回数がLAPSの値になったら
                 transi.idx = 3 #idxを3にしてゴール処理へ
                 transi.tmr = 0 #tmrを0にする
 
@@ -77,15 +72,15 @@ class PlayerCar(Car):
 class CompCar(Car):
     #コンストラクタ
     def __init__(self, x, y, lr, spd):
-        super().__init__(x, y, lr, spd)
+        super().__init__(x, y, lr, spd)  #Carクラスのコンストラクタを使用
 
 
 #CompCarクラスのリストを管理するCompCarListクラスを作成
 class CarsList:
     #コンストラクタ
     def __init__(self, CAR):
-        self.data = []
-        self.CAR = CAR
+        self.data = []  #車のインスタンスを管理するリスト
+        self.CAR = CAR  #車の数
 
     #イテレータ
     def __iter__(self):

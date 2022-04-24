@@ -2,8 +2,8 @@
 class Way:
     #コンストラクタの作成
     def __init__(self, curve, updown):
-        self.curve = curve
-        self.updown = updown
+        self.curve = curve  #道が曲がる向き
+        self.updown = updown    #道の起伏
 
     def show(self):
         print(f'{self.curve},{self.updown}')
@@ -13,16 +13,16 @@ class Way:
 class Course:
     #Wayクラスのリストを格納するための変数を作成
     def __init__(self, CMAX, CLEN, LAPS, laps, laptime, DATA_LR, DATA_UD, object_left, object_right, ):
-        self.data = []
-        self.CMAX = CMAX
-        self.CLEN = CLEN
-        self.LAPS = LAPS
-        self.laps = laps
-        self.laptime = laptime
-        self.DATA_LR = DATA_LR
-        self.DATA_UD = DATA_UD
-        self.obl = object_left
-        self.obr = object_right
+        self.data = []  #Wayクラスのインスタンスを格納するリスト
+        self.CMAX = CMAX    #コースの長さ
+        self.CLEN = CLEN    #コースのデータの量
+        self.LAPS = LAPS    #何周でゴールになるかを決める
+        self.laps = laps    #何周目かを管理する
+        self.laptime = laptime  #ラップタイム表示用
+        self.DATA_LR = DATA_LR  #カーブを作る基になるデータ
+        self.DATA_UD = DATA_UD  #起伏を作る基になるデータ
+        self.obl = object_left  #道路左に置く物体の番号を入れる
+        self.obr = object_right #道路右に置く物体の番号を入れる
 
 
     #iterメソッド
@@ -42,7 +42,7 @@ class Course:
         self.data[key] = value
 
     #コースデータを作るメソッド
-    def make_course(self, BOARD, object_right, object_left):
+    def make_course(self, BOARD):
         for i in range(self.CLEN):  #コースの長さ分(39回)繰り返す
             lr1 = self.DATA_LR[i]       #カーブデータをlr1に代入
             lr2 = self.DATA_LR[(i+1)%self.CLEN]    #次のカーブデータをlr2に代入
