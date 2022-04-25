@@ -28,13 +28,14 @@ class PlayerCar(Car):
         self.mycar = mycar  #選択している車の種類
 
 
-    def drive_car(self, key, transi, recbk, rec, cdata, board): #プレイヤーの車を操作、制御する関数
+    def drive_car(self, key, transi, recbk, rec, cdata, ctype, board): #プレイヤーの車を操作、制御する関数
         SPD = 320
         MOVE = 5
-        ACL = 3
+        ACL = 6
         if self.mycar == 0: #選択した車種が赤色なら
-            SPD = 340   #最大速度を360㎞にする
-            MOVE = 1
+            SPD = 340   #最大速度を340㎞にする
+            MOVE = 1    #操作性を標準より下げる
+            ACL = 3     #加速度を標準より下げる
         elif self.mycar == 1:   #選択した車種が青色なら
             MOVE = 12   #移動する値を増やす
         elif self.mycar == 2:   #選択した車種が黄色なら
@@ -72,9 +73,8 @@ class PlayerCar(Car):
             self.spd *= 0.9   #減速する
 
         self.y = self.y + self.spd/100    #車の速度からコース上の位置を計算
-        if self.y > cdata.CMAX-1:   #コース終点を越えたら
-            self.y -= cdata.CMAX    #コースの頭に戻す
-            cdata.laptime[cdata.laps] = draw.time_str(rec[0]-recbk[0]) #ラップタイムを計算し代入
+        if self.y > cdata.CLAPMAX*(cdata.laps+1)-1:   #コース終点を越えたら
+            ctype.laptime[cdata.laps] = draw.time_str(rec[0]-recbk[0]) #ラップタイムを計算し代入
             recbk[0] = rec[0] #現在のタイムを保持
             cdata.laps = cdata.laps + 1   #周回数の値を1増やす
             if cdata.laps == 3:    #周回数がLAPSの値になったら
