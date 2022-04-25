@@ -12,10 +12,12 @@ class Way:
 #Courseクラスの作成
 class Course:
     #Wayクラスのリストを格納するための変数を作成
-    def __init__(self, CMAX, CLEN, DATA_LR, DATA_UD, object_left, object_right):
+    def __init__(self, CMAX, CLEN, CLAPSLEN, CLAPMAX, DATA_LR, DATA_UD, object_left, object_right):
         self.data = []  #Wayクラスのインスタンスを格納するリスト
-        self.CMAX = CMAX    #コースの長さ
-        self.CLEN = CLEN    #コースのデータの量
+        self.CMAX = CMAX    #コース全体のデータ量
+        self.CLEN = CLEN    #コース全体の長さ
+        self.CLAPSLEN = CLAPSLEN    #コースの1lapの長さ
+        self.CLAPMAX = CLAPMAX  #コースの1lapのデータ量
         self.DATA_LR = DATA_LR  #カーブを作る基になるデータ
         self.DATA_UD = DATA_UD  #起伏を作る基になるデータ
         self.obl = object_left  #道路左に置く物体の番号を入れる
@@ -28,6 +30,7 @@ class Course:
         return iter(self.data)
 
     #追加メソッド
+
     def add(self, way):
         self.data.append(way)
 
@@ -42,11 +45,11 @@ class Course:
     #コースデータを作るメソッド
     def make_course(self, BOARD):
         for i in range(0, 3):
-            for j in range(self.CLEN):  #コースの長さ分(39回)繰り返す
+            for j in range(self.CLAPSLEN):  #コースの長さ分(39回)繰り返す
                 lr1 = self.DATA_LR[i][j]       #カーブデータをlr1に代入
-                lr2 = self.DATA_LR[i][(j+1)%self.CLEN]    #次のカーブデータをlr2に代入
+                lr2 = self.DATA_LR[i][(j+1)%self.CLAPSLEN]    #次のカーブデータをlr2に代入
                 ud1 = self.DATA_UD[i][j]    #起伏データをudlに代入
-                ud2 = self.DATA_UD[i][(j+1)%self.CLEN]   #次の起伏データをud2に代入
+                ud2 = self.DATA_UD[i][(j+1)%self.CLAPSLEN]   #次の起伏データをud2に代入
                 for k in range(BOARD):  #板の数だけ(120回)繰り返す
                     pos = k+BOARD*j     #リストの添え字を計算しposに代入
                     self.add(Way(lr1*(BOARD-k)/BOARD + lr2*k/BOARD, ud1*(BOARD-k)/BOARD + ud2*k/BOARD)) #coursedataに道の曲がる向きと起伏を計算しリストに追加
