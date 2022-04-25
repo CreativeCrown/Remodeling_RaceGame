@@ -55,7 +55,7 @@ class Draw: #描画用クラス
         self.screen.blit(sur, [x, y])  # サーフェイスを画面に転送
 
 
-    def draw_road(self, board, cars, cdata, img_obj, img_sea, img_car):  # 描画用データをもとに道路を描くメソッド
+    def draw_road(self, board, cars, cdata, ctype, img_obj, img_sea, img_car):  # 描画用データをもとに道路を描くメソッド
         # self.sy = self.horizon    #道路を描き始めるY座標をsyに代入
         for i in range(board.BOARD-1, 0, -1):  # 繰り返しで道路の板を描いていく
             ux = board.board_x[i]  # 台形の上底のX座標をuxに代入
@@ -66,7 +66,7 @@ class Draw: #描画用クラス
             by = self.sy - board.BOARD_UD[i-1]*board.board_ud[i-1]  # 下底のY座標をbyに代入
             bw = board.BOARD_W[i-1]  # 下底の幅をbwに代入
             col = (160, 160, 160)  # colに板の色を代入
-            if int(cars[0].y+i) % cdata.CMAX == cars[0].PLCAR_Y+10:  # ゴールの位置なら
+            if int(cars[0].y+i) % cdata.CLAPMAX == cars[0].PLCAR_Y+10:  # ゴールの位置なら
                 col = (192, 0, 0)  # 赤線の色の値を代入
             pygame.draw.polygon(
                 self.screen, col, [[ux, uy], [ux+uw, uy], [bx+bw, by], [bx, by]])  # 道路の板を描く
