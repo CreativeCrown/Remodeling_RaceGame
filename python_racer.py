@@ -8,6 +8,7 @@ from car import *
 from draw import *
 from road import *
 from gametransition import *
+from tutorial import *
 
 
 rec = [0]     #走行時間を測る変数
@@ -56,7 +57,6 @@ LAPS = 3                    #何周すればゴールかを定める定数
 laptime = ["0'00.00"]*LAPS  #ラップタイム表示用のリスト
 
 
-
 #Courseクラスをcourse変数に格納
 cdata = Course(CMAX, CLEN, CLAPSLEN, CLAPMAX, DATA_LR, 
                             DATA_UD, object_left, object_right)
@@ -71,6 +71,8 @@ ctype.add(cdata)
 board = Board(BOARD, BOARD_W, BOARD_H, BOARD_UD, board_x, board_ud)
 #Transitionクラスのインスタンスを作成
 transi = Transition(0, 0)
+#Tutorialクラスのインスタンスを作成
+tuto = Tutorial()
 
 
 def main(): #メイン処理を行う関数
@@ -170,7 +172,7 @@ def main(): #メイン処理を行う関数
             d_item.draw_text(ctype.laptime[i], 80, 130+40*i, d_item.YELLOW, fnt_s)  #ラップタイムを表示
 
         key = pygame.key.get_pressed()  #keyに全てのキーの状態を代入
-        transi.game_transition(cars, ctype, cdata, d_item, board, img_title, img_car, se_crash, rec, recbk, key)
+        transi.game_transition(cars, ctype, cdata, d_item, board, img_title, img_car, se_crash, rec, recbk, key, tuto)
 
         pygame.display.update() #画面を更新する
         clock.tick(60)  #フレームレートを指定
