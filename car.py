@@ -33,9 +33,9 @@ class PlayerCar(Car):
 
     def drive_car(self, key, transi, recbk, rec, cdata, ctype, board): #プレイヤーの車を操作、制御する関数
         if self.mycar == 0: #選択した車種が赤色なら
-            self.SPD = 340   #最大速度を340㎞にする
+            self.SPD = 350   #最大速度を340㎞にする
             self.MOVE = 4    #操作性を標準より下げる
-            self.ACL = 4     #加速度を標準より下げる
+            self.ACL = 2     #加速度を標準より下げる
         elif self.mycar == 1:   #選択した車種が青色なら
             self.MOVE = 12   #移動する値を増やす
         elif self.mycar == 2:   #選択した車種が黄色なら
@@ -53,7 +53,10 @@ class PlayerCar(Car):
             self.lr = int(self.lr*0.9)  #正面向きに近づける
 
         if key[K_a] == 1:   #Aキーが押されたら
-            self.spd += self.ACL #速度を増やす
+            if self.spd < 180:
+                self.spd += 8
+            elif self.spd >= 180:
+                self.spd += self.ACL #速度を増やす
         elif key[K_z] == 1: #そうでなくZキーが押されたら
             self.spd -= 10    #速度を減らす
         else:   #そうでないなら
@@ -119,8 +122,8 @@ class CarsList(Car):
         for i in range(cs, self.CAR):    #繰り返しで全ての車を処理する
             if self[i].spd > 200:   #速度が200より大きいなら
                 self[i].spd = 200
-            if self[i].spd < 100:    #速度が100より小さいなら
-                self[i].spd += 3 #速度を増やす
+            if self[i].spd < 150:    #速度が100より小さいなら
+                self[i].spd += 5 #速度を増やす
             if i == transi.tmr%120:    #一定時間ごとに
                 self[i].lr += random.choice([-1, 0, 1])  #向きをランダムに変える
                 if self[i].lr < -3:  self[i].lr = -3  #向きが-3未満なら-3にする
