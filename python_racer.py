@@ -14,7 +14,7 @@ rec = [0]     #走行時間を測る変数
 recbk = [0]   #ラップタイム計算用の変数
 se_crash = None #衝突時の効果音を読み込む変数
 
-#道路のカーブを作る下になるデータ
+#道路のカーブを作る基になるデータ
 DATA_LR = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 2, 1, 0, 2, 4, 2, 4, 2, 0, 0, 0, -2, -2, -4, -4, -2, -1, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -2, -1, 0, -2, -4, -2, -4, -2, 0, 0, 0, 2, 2, 4, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0],
@@ -79,10 +79,11 @@ def main(): #メイン処理を行う関数
     pygame.display.set_caption("Python Racer")  #ウィンドウに表示するタイトルを指定
     screen = pygame.display.set_mode((800, 600))    #描画面を初期化
     clock = pygame.time.Clock() #clockオブジェクトを作成
+    fnt_ss = pygame.font.Font(None,30)  #フォントオブジェクトを作成、とても小さな文字
     fnt_s = pygame.font.Font(None, 40)  #フォントオブジェクトを作成、小さな文字
     fnt_m = pygame.font.Font(None, 50)  #フォントオブジェクトを作成、中位の文字
     fnt_l = pygame.font.Font(None, 120) #フォントオブジェクトを作成、大きな文字
-    d_item = Draw(screen, fnt_s, fnt_m, fnt_l) #drawオブジェクトを作成
+    d_item = Draw(screen, fnt_ss, fnt_s, fnt_m, fnt_l) #drawオブジェクトを作成
     c = 0   #実際に走るコースの種類用のインデックス
 
     img_title = pygame.image.load("image_pr/title.png").convert_alpha() #タイトルロゴを読み込む変数
