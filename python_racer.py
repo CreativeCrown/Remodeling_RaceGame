@@ -137,7 +137,7 @@ def main(): #メイン処理を行う関数
                 sys.exit()  #プログラムを終了する
             if event.type == KEYDOWN:   #キーを押すイベントが発生した時
                 if event.key == K_F1:   #F1キーなら
-                    d_item = pygame.display.set_mode((800, 600), FULLSCREEN)    #フルスクリーンモードにする
+                    d_item.screen = pygame.display.set_mode((800, 600), FULLSCREEN)    #フルスクリーンモードにする
                     draw.screen = screen    #インスタンスを初期化
                 if event.key == K_F2 or event.key == K_ESCAPE:  #F2キーかEscキーなら
                     screen = pygame.display.set_mode((800, 600))    #通常表示に戻す
