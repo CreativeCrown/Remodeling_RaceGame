@@ -9,7 +9,7 @@ class Transition:
         self.idx = idx  #画面遷移用インデックス
         self.tmr = tmr  #タイマー
 
-    def game_transition(self, cars, cdata, d_item, board, img_title, img_car, se_crash, rec, recbk, key):
+    def game_transition(self, cars, ctype, cdata, d_item, board, img_title, img_car, se_crash, rec, recbk, key):
         if self.idx == 0:    #idxが0の時(タイトル画面)
             d_item.screen.blit(img_title, [120, 120])  #タイトルロゴを表示
             d_item.draw_text("[A] Start game", 400, 320, d_item.WHITE, d_item.fnt_m) #[A] Start gameの文字を表示
@@ -25,8 +25,8 @@ class Transition:
                 cdata.laps = 0    #周回数を0に
                 rec[0] = 0     #走行時間を0に
                 recbk[0] = 0   #ラップタイム計算用の変数を0に
-                for i in range(cdata.LAPS):   #繰り返しで
-                    cdata.laptime[i] = "0'00.00"  #ラップタイムを0'00.00に
+                for i in range(ctype.LAPS):   #繰り返しで
+                    ctype.laptime[i] = "0'00.00"  #ラップタイムを0'00.00に
             if key[K_s] != 0:   #Sキーが押されたら
                 self.idx = 4     #idxを4にして車種選択に移行
 
@@ -43,7 +43,7 @@ class Transition:
             if self.tmr < 60:    #60フレームの間
                 d_item.draw_text("Go!", 400, 240, d_item.RED, d_item.fnt_l)  #Go!と表示
             rec[0] = rec[0] + 1/60    #走行時間をカウント
-            cars[0].drive_car(key, self, recbk, rec, cdata, board)  #プレイヤーの車を操作
+            cars[0].drive_car(key, self, recbk, rec, cdata, ctype, board)  #プレイヤーの車を操作
             cars.move_car(1, cdata.CMAX, board, self, se_crash) #COMカーを動かす
 
 
@@ -61,16 +61,28 @@ class Transition:
                 self.idx = 0 #idxを0にしてタイトルに戻る
 
         if self.idx == 4:    #idxが4の時(車種選択画面)
+            SPD = [7,5,5]
+            MOVE = [2,6,4]
+            ACL = [2,4,6]
             cars.move_car(0, cdata.CMAX, board, self, se_crash) #全ての車を動かす
-            d_item.draw_text("Select your car", 400, 160, d_item.WHITE, d_item.fnt_m)    #Select your carの文字を表示
+            d_item.draw_text("Select your car", 400, 100, d_item.WHITE, d_item.fnt_m)    #Select your carの文字を表示
             for i in range(3):  #繰り返しで
                 x = 160+240*i   #xに選択用の枠のX座標を代入
-                y = 300     #yに選択用の枠のY座標を代入
+                y = 240     #yに選択用の枠のY座標を代入
                 col = d_item.BLACK #colに黒を代入
                 if i == cars[0].mycar:  #選択している車種なら
                     col = (0, 128, 255) #colに明るい青の値を代入
-                pygame.draw.rect(d_item.screen, col, [x-100, y-80, 200, 160])  #colの色で枠を描く
+                pygame.draw.rect(d_item.screen, col, [x-100, y-80, 200, 230])  #colの色で枠を描く
                 d_item.draw_text("["+str(i+1)+"]", x, y-50, d_item.WHITE, d_item.fnt_m)  #[n]の文字を表示
+                d_item.draw_text("speed", x-30, y+90, d_item.WHITE, d_item.fnt_ss)  #speedを表示
+                d_item.draw_text("usability", x-45, y+113, d_item.WHITE, d_item.fnt_ss) #usabilityを表示
+                d_item.draw_text("axel", x-25, y+137, d_item.WHITE, d_item.fnt_ss)  #axelを表示
+                for j in range(SPD[i]):     #speedの数の分繰り返し
+                    pygame.draw.rect(d_item.screen, d_item.YELLOW, [(x-36)+(38+(j*12)), y+82, 10, 16])  #■を描画
+                for j in range(MOVE[i]):    #usabilityの数の分繰り返し
+                    pygame.draw.rect(d_item.screen, d_item.YELLOW, [(x-36)+(38+(j*12)), y+105, 10, 16]) #■を描画
+                for j in range(ACL[i]):     #axelの数の分繰り返し
+                    pygame.draw.rect(d_item.screen, d_item.YELLOW, [(x-36)+(38+(j*12)), y+128, 10, 16]) #■を描画
                 d_item.screen.blit(img_car[3+i*7], [x-100, y-20])  #車を描く
             d_item.draw_text("[Enter] OK!", 400, 440, d_item.GREEN, d_item.fnt_m)    #[Enter] OK!という文字を表示
             if key[K_1] == 1:   #1キーが押されたら
