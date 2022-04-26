@@ -26,34 +26,34 @@ class PlayerCar(Car):
         super().__init__(x, y, lr, spd) #Carクラスのコンストラクタを使用
         self.PLCAR_Y = PLCAR_Y  #車の表示位置
         self.mycar = mycar  #選択している車の種類
+        self.SPD = 320  #車の最大速度
+        self.MOVE = 8    #車の操作性
+        self.ACL = 8  #車の加速性
 
 
     def drive_car(self, key, transi, recbk, rec, cdata, ctype, board): #プレイヤーの車を操作、制御する関数
-        SPD = 320
-        MOVE = 8
-        ACL = 8
         if self.mycar == 0: #選択した車種が赤色なら
-            SPD = 340   #最大速度を340㎞にする
-            MOVE = 4    #操作性を標準より下げる
-            ACL = 4     #加速度を標準より下げる
+            self.SPD = 340   #最大速度を340㎞にする
+            self.MOVE = 4    #操作性を標準より下げる
+            self.ACL = 4     #加速度を標準より下げる
         elif self.mycar == 1:   #選択した車種が青色なら
-            MOVE = 12   #移動する値を増やす
+            self.MOVE = 12   #移動する値を増やす
         elif self.mycar == 2:   #選択した車種が黄色なら
-            ACL = 12     #加速度を増やす
+            self.ACL = 12     #加速度を増やす
 
         if key[K_LEFT] == 1:    #左キーが押されたら
             if self.lr > -3:  #向きが-3より大きければ
                 self.lr -= 1  #向きを-1する(左に向かせる)
-            self.x = self.x + (self.lr-3)*self.spd/100 - MOVE  #車の横方向の座標を計算
+            self.x = self.x + (self.lr-3)*self.spd/100 - self.MOVE  #車の横方向の座標を計算
         elif key[K_RIGHT] == 1: #そうでなく右キーが押されたら
             if self.lr < 3:   #向きが3より小さければ
                 self.lr += 1  #向きを+1する(右に向かせる)
-            self.x = self.x + (self.lr+3)*self.spd/100 + MOVE  #車の横方向の座標を計算
+            self.x = self.x + (self.lr+3)*self.spd/100 + self.MOVE  #車の横方向の座標を計算
         else:
             self.lr = int(self.lr*0.9)  #正面向きに近づける
 
         if key[K_a] == 1:   #Aキーが押されたら
-            self.spd += ACL #速度を増やす
+            self.spd += self.ACL #速度を増やす
         elif key[K_z] == 1: #そうでなくZキーが押されたら
             self.spd -= 10    #速度を減らす
         else:   #そうでないなら
@@ -61,8 +61,8 @@ class PlayerCar(Car):
 
         if self.spd < 0:  #速度が0未満なら
             self.spd = 0  #速度を0にする
-        if self.spd > SPD:    #最高速度を超えたら
-            self.spd = SPD    #最高速度にする
+        if self.spd > self.SPD:    #最高速度を超えたら
+            self.spd = self.SPD    #最高速度にする
 
         self.x -= self.spd*cdata[int(self.y+self.PLCAR_Y)%cdata.CMAX].curve/50  #車の速度と道の曲がりから横方向の座標を計算
         if self.x < 0:    #左の路肩に接触したら
