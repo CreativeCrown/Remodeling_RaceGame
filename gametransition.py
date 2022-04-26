@@ -1,6 +1,9 @@
+from operator import truediv
+from this import d
 from car import *
 import pygame
 from pygame.locals import *
+from tutorial import *
 
 
 class Transition:
@@ -9,11 +12,12 @@ class Transition:
         self.idx = idx  #画面遷移用インデックス
         self.tmr = tmr  #タイマー
 
-    def game_transition(self, cars, ctype, cdata, d_item, board, img_title, img_car, se_crash, rec, recbk, key):
+    def game_transition(self, cars, ctype, cdata, d_item, board, img_title, img_car, se_crash, rec, recbk, key, tuto):
         if self.idx == 0:    #idxが0の時(タイトル画面)
             d_item.screen.blit(img_title, [120, 120])  #タイトルロゴを表示
             d_item.draw_text("[A] Start game", 400, 320, d_item.WHITE, d_item.fnt_m) #[A] Start gameの文字を表示
             d_item.draw_text("[S] Select your car", 400, 400, d_item.WHITE, d_item.fnt_m)    #[S] Select your carの文字を表示
+            d_item.draw_text("[T] Start tutorial", 400, 480, d_item.WHITE, d_item.fnt_m)    #[T] Start tutorialの文字を表示
             cars.move_car(0, cdata.CMAX, board, self, se_crash) #全ての車を動かす
             if key[K_a] != 0:   #Aキーが押されたら
                 #全ての車を初期位置に
@@ -29,6 +33,8 @@ class Transition:
                     ctype.laptime[i] = "0'00.00"  #ラップタイムを0'00.00に
             if key[K_s] != 0:   #Sキーが押されたら
                 self.idx = 4     #idxを4にして車種選択に移行
+            if key[K_t] != 0:   #Tキーが押されたら
+                self.idx = 5    #idxを5にしてチュートリアル画面に移行
 
         if self.idx == 1:    #idxが1の時(カウントダウン)
             n = 3-int(self.tmr/60)   #カウントダウンの数を計算しnに代入
@@ -61,9 +67,9 @@ class Transition:
                 self.idx = 0 #idxを0にしてタイトルに戻る
 
         if self.idx == 4:    #idxが4の時(車種選択画面)
-            SPD = [7,5,5]
+            SPD = [8,5,5]
             MOVE = [2,6,4]
-            ACL = [2,4,6]
+            ACL = [1,4,6]
             cars.move_car(0, cdata.CMAX, board, self, se_crash) #全ての車を動かす
             d_item.draw_text("Select your car", 400, 100, d_item.WHITE, d_item.fnt_m)    #Select your carの文字を表示
             for i in range(3):  #繰り返しで
@@ -93,3 +99,40 @@ class Transition:
                 cars[0].mycar = 2   #mycarに2を代入(黄色の車)
             if key[K_RETURN] == 1:  #Enterキーが押されたら
                 self.idx = 0 #idxを0にしてタイトル画面に戻る
+
+        if self.idx == 5:   #idxが5の時
+            cola = d_item.WHITE   #灰色
+            colz = d_item.WHITE
+            coll = d_item.WHITE
+            colr = d_item.WHITE
+            if key[K_a] != 0:
+                tuto.btna = 1
+            if key[K_z] != 0:
+                tuto.btnz = 1
+            if key[K_LEFT] != 0:
+                tuto.btnl = 1
+            if key[K_RIGHT] != 0:
+                tuto.btnr = 1
+            if tuto.btna == 1:
+                cola = (128, 128, 128)
+            if tuto.btnz == 1:
+                colz = (128, 128, 128)
+            if tuto.btnl == 1:
+                coll = (128, 128, 128)
+            if tuto.btnr == 1:
+                colr = (128, 128, 128)
+            d_item.draw_text("push [A] button to move", 126, 300, cola, d_item.fnt_ss)
+            d_item.draw_text("push [Z] button to stop", 118, 330, colz, d_item.fnt_ss)
+            d_item.draw_text("push [LEFT] button", 100, 360, coll, d_item.fnt_ss)
+            d_item.draw_text("to turn left", 140, 380, coll, d_item.fnt_ss)
+            d_item.draw_text("push [RIGHT] button", 110, 410, colr, d_item.fnt_ss)
+            d_item.draw_text("to turn right", 140, 430, colr, d_item.fnt_ss)
+            cars[0].drive_car(key, self, recbk, rec, cdata, ctype, board)  #プレイヤーの車を操作
+            if tuto.btna == 1 and tuto.btnz == 1 and tuto.btnl == 1 and tuto.btnr == 1:
+                d_item.draw_text("That's it!", 400, 300, d_item.YELLOW, d_item.fnt_m)
+                d_item.draw_text("Let's Start Game!", 400, 400, d_item.YELLOW, d_item.fnt_m)
+                if self.tmr > 520:
+                    tuto.btna, tuto.btnz, tuto.btnl, tuto.btnr = 0, 0, 0, 0
+                    self.tmr = 0
+                    self.idx = 0
+            
