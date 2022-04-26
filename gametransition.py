@@ -1,5 +1,3 @@
-from operator import truediv
-from this import d
 from car import *
 import pygame
 from pygame.locals import *
@@ -129,10 +127,14 @@ class Transition:
             d_item.draw_text("to turn right", 140, 430, colr, d_item.fnt_ss)
             cars[0].drive_car(key, self, recbk, rec, cdata, ctype, board)  #プレイヤーの車を操作
             if tuto.btna == 1 and tuto.btnz == 1 and tuto.btnl == 1 and tuto.btnr == 1:
-                d_item.draw_text("That's it!", 400, 300, d_item.YELLOW, d_item.fnt_m)
-                d_item.draw_text("Let's Start Game!", 400, 400, d_item.YELLOW, d_item.fnt_m)
-                if self.tmr > 520:
-                    tuto.btna, tuto.btnz, tuto.btnl, tuto.btnr = 0, 0, 0, 0
-                    self.tmr = 0
-                    self.idx = 0
+                self.tmr = 0
+                self.idx = 6
+
+        if self.idx == 6:
+            d_item.draw_text("That's it!", 400, 300, d_item.YELLOW, d_item.fnt_m)
+            d_item.draw_text("Let's Start Game!", 400, 400, d_item.YELLOW, d_item.fnt_m)
+            if self.tmr > 60*5:
+                tuto.btna, tuto.btnz, tuto.btnl, tuto.btnr = 0, 0, 0, 0
+                self.tmr = 0
+                self.idx = 0
             
