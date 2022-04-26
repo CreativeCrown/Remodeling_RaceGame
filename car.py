@@ -30,12 +30,12 @@ class PlayerCar(Car):
 
     def drive_car(self, key, transi, recbk, rec, cdata, ctype, board): #プレイヤーの車を操作、制御する関数
         SPD = 320
-        MOVE = 5
-        ACL = 6
+        MOVE = 8
+        ACL = 8
         if self.mycar == 0: #選択した車種が赤色なら
             SPD = 340   #最大速度を340㎞にする
-            MOVE = 1    #操作性を標準より下げる
-            ACL = 3     #加速度を標準より下げる
+            MOVE = 4    #操作性を標準より下げる
+            ACL = 4     #加速度を標準より下げる
         elif self.mycar == 1:   #選択した車種が青色なら
             MOVE = 12   #移動する値を増やす
         elif self.mycar == 2:   #選択した車種が黄色なら
