@@ -2,7 +2,7 @@ import pygame
 
 class Draw: #描画用クラス
     #コンストラクタ
-    def __init__(self, screen, fnt_s, fnt_m, fnt_l):
+    def __init__(self, screen, fnt_ss, fnt_s, fnt_m, fnt_l):
         self.screen = screen    #スクリーンの大きさ
         self.vertical = 0    #背景の水平方向
         self.horizon = 0      #背景の垂直方向
@@ -12,6 +12,7 @@ class Draw: #描画用クラス
         self.RED = (255, 0, 0)          #赤色
         self.YELLOW = (255, 224, 0)     #黄色
         self.GREEN = (0, 255, 0)        #緑色
+        self.fnt_ss = fnt_ss    #SSサイズフォント
         self.fnt_s = fnt_s      #Sサイズフォント
         self.fnt_m = fnt_m      #Mサイズフォント
         self.fnt_l = fnt_l      #Lサイズフォント
