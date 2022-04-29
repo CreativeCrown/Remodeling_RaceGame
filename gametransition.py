@@ -13,9 +13,9 @@ class Transition:
     def game_transition(self, cars, ctype, cdata, d_item, board, img_title, img_car, se_crash, rec, recbk, key, tuto):
         if self.idx == 0:    #idxが0の時(タイトル画面)
             d_item.screen.blit(img_title, [120, 120])  #タイトルロゴを表示
-            d_item.draw_text("[A] Start game", 400, 320, d_item.WHITE, d_item.fnt_m) #[A] Start gameの文字を表示
-            d_item.draw_text("[S] Select your car", 400, 400, d_item.WHITE, d_item.fnt_m)    #[S] Select your carの文字を表示
-            d_item.draw_text("[T] Start tutorial", 400, 480, d_item.WHITE, d_item.fnt_m)    #[T] Start tutorialの文字を表示
+            d_item.draw_text("[A] Start game", 400, 400, d_item.WHITE, d_item.fnt_m) #[A] Start gameの文字を表示
+            d_item.draw_text("[S] Select your car", 400, 480, d_item.WHITE, d_item.fnt_m)    #[S] Select your carの文字を表示
+            d_item.draw_text("[T] Start tutorial", 400, 320, d_item.WHITE, d_item.fnt_m)    #[T] Start tutorialの文字を表示
             cars.move_car(0, cdata.CMAX, board, self, se_crash) #全ての車を動かす
             if key[K_a] != 0:   #Aキーが押されたら
                 #全ての車を初期位置に
