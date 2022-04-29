@@ -37,9 +37,13 @@ class PlayerCar(Car):
             self.MOVE = 4    #操作性を標準より下げる
             self.ACL = 2     #加速度を標準より下げる
         elif self.mycar == 1:   #選択した車種が青色なら
-            self.MOVE = 12   #移動する値を増やす
+            self.SPD = 320      #最大速度を320km
+            self.MOVE = 12   #操作性を12
+            self.ACL = 8        #加速度を8
         elif self.mycar == 2:   #選択した車種が黄色なら
-            self.ACL = 12     #加速度を増やす
+            self.SPD = 320      #最大速度を320km
+            self.MOVE = 8       #操作性を8
+            self.ACL = 12     #加速度を12
 
         if key[K_LEFT] == 1:    #左キーが押されたら
             if self.lr > -3:  #向きが-3より大きければ
