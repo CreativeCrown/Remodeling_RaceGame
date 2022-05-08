@@ -115,8 +115,8 @@ class Transition:
                 for j in range(ACL[i]):     #axelの数の分繰り返し
                     pygame.draw.rect(d_item.screen, d_item.YELLOW, [(x-36)+(38+(j*12)), y+128, 10, 16]) #■を描画
                 d_item.screen.blit(img_car[3+i*7], [x-100, y-20])  #車を描く
-            d_item.draw_text("[← →]で選択", 400, 440, d_item.GREEN, d_item.fnt_m)    #[← →]で選択という文字を表示
-            d_item.draw_text("[Enter]で決定", 400, 500, d_item.GREEN, d_item.fnt_m)    #[Enter]で決定という文字を表示
+            d_item.draw_text("[← →]で選択", 200, 440, d_item.GREEN, d_item.fnt_m)    #[← →]で選択という文字を表示
+            d_item.draw_text("[Enter]で決定", 600, 440, d_item.GREEN, d_item.fnt_m)    #[Enter]で決定という文字を表示
             
             if self.tmr > 10:   #画面が切り替わり、0.1秒経ったら
                 if key[K_RETURN]:   #Enterキーが押されたら
