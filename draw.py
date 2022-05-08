@@ -10,6 +10,7 @@ class Draw: #描画用クラス
         self.WHITE = (255, 255, 255)    #白色
         self.BLACK = (0, 0, 0)          #黒色
         self.RED = (255, 0, 0)          #赤色
+        self.GRAY = (128, 128, 128)     #灰色
         self.YELLOW = (255, 224, 0)     #黄色
         self.GREEN = (0, 255, 0)        #緑色
         self.fnt_ss = fnt_ss    #SSサイズフォント
@@ -95,10 +96,6 @@ class Draw: #描画用クラス
                         uw*0.5, uy, scale)  # その画像を描画
             if obj_l == 9:  # 海なら
                 self.screen.blit(img_sea, [ux-uw*0.5-780, uy])  # その画像を描画
-            obj_r = cdata.obr[int(cars[0].y+i) % cdata.CMAX]  # obj_rに右側の物体の番号を代入
-            if obj_r == 1:  # 看板なら
-                self.draw_obj(img_obj[obj_r], ux +
-                        uw*1.3, uy, scale)  # その画像を描画
 
             for c in range(1, cars.CAR):  # 繰り返しで
                 if int(cars[c].y) % cdata.CMAX == int(cars[0].y+i) % cdata.CMAX:  # その板にCOMカーがあるか調べ
