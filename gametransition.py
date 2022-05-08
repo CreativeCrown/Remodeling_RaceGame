@@ -1,7 +1,9 @@
+from turtle import delay
 from car import *
 import pygame
 from pygame.locals import *
 from tutorial import *
+import time
 
 
 class Transition:
@@ -9,30 +11,56 @@ class Transition:
     def __init__(self, idx, tmr):
         self.idx = idx  #画面遷移用インデックス
         self.tmr = tmr  #タイマー
+        self.snum = 0   #選択した番号の変数(SelectNum)
+        self.scnum = 0  #選択した車番号の範囲の変数(SelectCarNum)
+        self.judge = 0  #選択した部分の色を変更するための判定をする変数
 
     def game_transition(self, cars, ctype, cdata, d_item, board, img_title, img_car, se_crash, rec, recbk, key, tuto):
         if self.idx == 0:    #idxが0の時(タイトル画面)
-            d_item.screen.blit(img_title, [120, 120])  #タイトルロゴを表示
-            d_item.draw_text("[A] Start game", 400, 400, d_item.WHITE, d_item.fnt_m) #[A] Start gameの文字を表示
-            d_item.draw_text("[S] Select your car", 400, 480, d_item.WHITE, d_item.fnt_m)    #[S] Select your carの文字を表示
-            d_item.draw_text("[T] Start tutorial", 400, 320, d_item.WHITE, d_item.fnt_m)    #[T] Start tutorialの文字を表示
-            cars.move_car(0, cdata.CMAX, board, self, se_crash) #全ての車を動かす
-            if key[K_a] != 0:   #Aキーが押されたら
-                #全ての車を初期位置に
-                cars[0].x, cars[0].y, cars[0].lr, cars[0].spd = 400, 0, 0, 0
-                for i in range(0, cars.CAR):
-                    cars.add(CompCar(random.randint(50, 750), random.randint(200, cdata.CMAX-200), 0, random.randint(100, 200)))
-                self.idx = 1     #idxを1にしてカウントダウンに
-                self.tmr = 0 #タイマーを0に
-                cdata.laps = 0    #周回数を0に
-                rec[0] = 0     #走行時間を0に
-                recbk[0] = 0   #ラップタイム計算用の変数を0に
-                for i in range(ctype.LAPS):   #繰り返しで
-                    ctype.laptime[i] = "0'00.00"  #ラップタイムを0'00.00に
-            if key[K_s] != 0:   #Sキーが押されたら
-                self.idx = 4     #idxを4にして車種選択に移行
-            if key[K_t] != 0:   #Tキーが押されたら
-                self.idx = 5    #idxを5にしてチュートリアル画面に移行
+            if self.tmr > 10:   #タイマーが0.1秒以上経ったら
+                #snum = 0    #タイトル画面で選択している場所を格納する変数
+                sgcol = d_item.WHITE    #Start Gameの色の変数(StartGameColor)
+                sccol = d_item.WHITE    #Select your carの色の変数(SelectCarColor)
+                stcol = d_item.WHITE    #Start tutorialの色の変数(StartTutorialColor)
+                if 0 <= self.snum and self.snum <= 5:   #選択した範囲が0~6なら
+                    stcol = d_item.GRAY #文字の色を灰色にする
+                    judge = 0   #judgeの値を0にする
+                elif 6 <= self.snum <= 11:  #選択した範囲が7~13なら
+                    sgcol = d_item.GRAY     #文字の色を灰色にする
+                    judge = 1   #judgeの値を1にする
+                elif 12 <= self.snum <= 17: #選択した範囲が14~20なら
+                    sccol = d_item.GRAY #文字の色を灰色にする
+                    judge = 2   #judgeの値を2にする
+                d_item.screen.blit(img_title, [120, 120])  #タイトルロゴを表示
+                d_item.draw_text("Start game", 400, 400, sgcol, d_item.fnt_m) #[A] Start gameの文字を表示
+                d_item.draw_text("Select your car", 400, 480, sccol, d_item.fnt_m)    #[S] Select your carの文字を表示
+                d_item.draw_text("Start tutorial", 400, 320, stcol, d_item.fnt_m)    #[T] Start tutorialの文字を表示
+                cars.move_car(0, cdata.CMAX, board, self, se_crash) #全ての車を動かす
+                if key[K_UP]:   #上キーが押されたら
+                    if self.snum == 0:    #もしsnumが0であれば
+                        self.snum = 18  #snumの値を20にする
+                    self.snum -= 1  #snumの値を1減らす
+                if key[K_DOWN]: #下キーが押されたら
+                    self.snum = (self.snum % 17) + 1
+                if key[K_RETURN]:   #Enterキーが押されたら
+                    if judge == 1:   #Aキーが押されたら
+                        #全ての車を初期位置に
+                        cars[0].x, cars[0].y, cars[0].lr, cars[0].spd = 400, 0, 0, 0
+                        for i in range(0, cars.CAR):
+                            cars.add(CompCar(random.randint(50, 750), random.randint(200, cdata.CMAX-200), 0, random.randint(100, 200)))
+                        self.idx = 1     #idxを1にしてカウントダウンに
+                        self.tmr = 0 #タイマーを0に
+                        cdata.laps = 0    #周回数を0に
+                        rec[0] = 0     #走行時間を0に
+                        recbk[0] = 0   #ラップタイム計算用の変数を0に
+                        for i in range(ctype.LAPS):   #繰り返しで
+                            ctype.laptime[i] = "0'00.00"  #ラップタイムを0'00.00に
+                    elif judge == 2:   #Sキーが押されたら
+                        self.idx = 4     #idxを4にして車種選択に移行
+                        self.tmr = 0    #タイマーを初期化
+                    elif judge == 0:   #Tキーが押されたら
+                        self.idx = 5    #idxを5にしてチュートリアル画面に移行
+                    judge = 0   #judgeを初期化する
 
         if self.idx == 1:    #idxが1の時(カウントダウン)
             n = 3-int(self.tmr/60)   #カウントダウンの数を計算しnに代入
@@ -77,7 +105,6 @@ class Transition:
                 if i == cars[0].mycar:  #選択している車種なら
                     col = (0, 128, 255) #colに明るい青の値を代入
                 pygame.draw.rect(d_item.screen, col, [x-100, y-80, 200, 230])  #colの色で枠を描く
-                d_item.draw_text("["+str(i+1)+"]", x, y-50, d_item.WHITE, d_item.fnt_m)  #[n]の文字を表示
                 d_item.draw_text("speed", x-30, y+90, d_item.WHITE, d_item.fnt_ss)  #speedを表示
                 d_item.draw_text("usability", x-45, y+113, d_item.WHITE, d_item.fnt_ss) #usabilityを表示
                 d_item.draw_text("axel", x-25, y+137, d_item.WHITE, d_item.fnt_ss)  #axelを表示
@@ -89,18 +116,29 @@ class Transition:
                     pygame.draw.rect(d_item.screen, d_item.YELLOW, [(x-36)+(38+(j*12)), y+128, 10, 16]) #■を描画
                 d_item.screen.blit(img_car[3+i*7], [x-100, y-20])  #車を描く
             d_item.draw_text("[Enter] OK!", 400, 440, d_item.GREEN, d_item.fnt_m)    #[Enter] OK!という文字を表示
-            if key[K_1] == 1:   #1キーが押されたら
-                cars[0].mycar = 0   #mycarに0を代入(赤い車)
-            if key[K_2] == 1:   #2キーが押されたら
-                cars[0].mycar = 1   #mycarに1を代入(青い車)
-            if key[K_3] == 1:   #3キーが押されたら
-                cars[0].mycar = 2   #mycarに2を代入(黄色の車)
-            if key[K_RETURN] == 1:  #Enterキーが押されたら
-                self.idx = 0 #idxを0にしてタイトル画面に戻る
+            
+            if self.tmr > 10:   #画面が切り替わり、0.1秒経ったら
+                if key[K_RETURN]:   #Enterキーが押されたら
+                    self.idx = 0    #idxを初期化
+                    self.snum = 0   #snumを初期化
+                    self.tmr = 0    #tmrを初期化
+            if key[K_LEFT]: #左キーが押されたら
+                if self.scnum == 0: #scnumの値が0だったら
+                    self.scnum = 18 #scnumの値を21にする
+                self.scnum -= 1 #scnumの値を1減らす
+            if key[K_RIGHT]:    #右キーが押されたら
+                self.scnum = (self.scnum + 1) % 18  #scnumの値を限界値20まで増やす
+            if 0 <= self.scnum <= 5:    #scnumの選択した範囲が0~6なら
+                cars[0].mycar = 0   #mycarの値を0にする(赤色)
+            elif 6 <= self.scnum <= 11: #範囲が7~13なら
+                cars[0].mycar = 1   #mycarの値を1にする(青色)
+            elif 12 <= self.scnum <= 17:    #範囲が14~20なら
+                cars[0].mycar = 2   #mycarの値を2にする(黄色)
+
 
         if self.idx == 5:   #idxが5の時
-            cola = d_item.WHITE   #灰色
-            colz = d_item.WHITE
+            cola = d_item.WHITE   #
+            colz = d_item.WHITE    
             coll = d_item.WHITE
             colr = d_item.WHITE
             if key[K_a] != 0:
