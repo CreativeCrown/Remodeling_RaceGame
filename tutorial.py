@@ -6,6 +6,7 @@ class Tutorial:
         self.__btnz = 0
         self.__btnl = 0
         self.__btnr = 0
+        self.__allbtn = False
 
     #ゲッター
     @property
@@ -24,6 +25,10 @@ class Tutorial:
     def btnr(self):
         return self.__btnr
 
+    @property
+    def allbtn(self):
+        return self.__allbtn
+
 
     #セッター
     @btna.setter
@@ -41,3 +46,7 @@ class Tutorial:
     @btnr.setter
     def btnr(self, value):
         self.__btnr = value
+
+    @allbtn.setter
+    def allbtn(self, value):
+        self.__allbtn = value
