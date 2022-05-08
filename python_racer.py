@@ -1,6 +1,5 @@
 import pygame
 import sys
-import math
 import random
 from pygame.locals import *
 from course import *
@@ -77,11 +76,12 @@ def main(): #メイン処理を行う関数
     pygame.display.set_caption("Python Racer")  #ウィンドウに表示するタイトルを指定
     screen = pygame.display.set_mode((800, 600))    #描画面を初期化
     clock = pygame.time.Clock() #clockオブジェクトを作成
-    fnt_ss = pygame.font.Font(None,30)  #フォントオブジェクトを作成、とても小さな文字
-    fnt_s = pygame.font.Font(None, 40)  #フォントオブジェクトを作成、小さな文字
-    fnt_m = pygame.font.Font(None, 50)  #フォントオブジェクトを作成、中位の文字
-    fnt_l = pygame.font.Font(None, 120) #フォントオブジェクトを作成、大きな文字
-    d_item = Draw(screen, fnt_ss, fnt_s, fnt_m, fnt_l) #drawオブジェクトを作成
+    fnt_ss = pygame.font.SysFont("hgｺﾞｼｯｸe",20)  #フォントオブジェクトを作成、とても小さな文字
+    fnt_s = pygame.font.SysFont("hgｺﾞｼｯｸe", 40)  #フォントオブジェクトを作成、小さな文字
+    fnt_m = pygame.font.SysFont("hgｺﾞｼｯｸe", 50)  #フォントオブジェクトを作成、中位の文字
+    fnt_l = pygame.font.SysFont("hgｺﾞｼｯｸe", 120) #フォントオブジェクトを作成、大きな文字
+    fnt_d = pygame.font.Font(None, 40)  #デフォルトフォント
+    d_item = Draw(screen, fnt_ss, fnt_s, fnt_m, fnt_l, fnt_d) #drawオブジェクトを作成
 
     img_title = pygame.image.load("image_pr/title.png").convert_alpha() #タイトルロゴを読み込む変数
     img_bg = pygame.image.load("image_pr/bg.png").convert() #背景(空と地面の絵)を読み込む変数
@@ -160,11 +160,11 @@ def main(): #メイン処理を行う関数
         #描画用データをもとに道路を描く
         d_item.draw_road(board, cars, cdata, ctype, img_obj, img_sea, img_car)
 
-        d_item.draw_text(str(int(cars[0].spd)) + "km/h", 680, 30, d_item.RED, fnt_m)   #速度を表示
-        d_item.draw_text("lap {}/{}".format(cdata.laps, ctype.LAPS), 100, 30, d_item.WHITE, fnt_m)    #周回数を表示
-        d_item.draw_text("time "+time_str(rec[0]), 100, 80, d_item.GREEN, fnt_s) #タイムを表示
+        d_item.draw_text(str(int(cars[0].spd)) + "km/h", 680, 30, d_item.RED, fnt_d)   #速度を表示
+        d_item.draw_text("lap {}/{}".format(cdata.laps, ctype.LAPS), 100, 30, d_item.WHITE, fnt_d)    #周回数を表示
+        d_item.draw_text("time "+time_str(rec[0]), 100, 80, d_item.GREEN, fnt_d) #タイムを表示
         for i in range(ctype.LAPS):   #繰り返しで
-            d_item.draw_text(ctype.laptime[i], 80, 130+40*i, d_item.YELLOW, fnt_s)  #ラップタイムを表示
+            d_item.draw_text(ctype.laptime[i], 80, 130+40*i, d_item.YELLOW, fnt_d)  #ラップタイムを表示
 
         pygame.event.pump()
         key = pygame.key.get_pressed()  #keyに全てのキーの状態を代入
