@@ -44,14 +44,14 @@ class Course:
 
     #コースデータを作るメソッド
     def make_course(self, BOARD):
-        for i in range(0, 3):
+        for i in range(0, 3):   #ラップの回数分繰り返す
             for j in range(self.CLAPSLEN):  #コースの長さ分(39回)繰り返す
                 lr1 = self.DATA_LR[i][j]       #カーブデータをlr1に代入
                 lr2 = self.DATA_LR[i][(j+1)%self.CLAPSLEN]    #次のカーブデータをlr2に代入
                 ud1 = self.DATA_UD[i][j]    #起伏データをudlに代入
                 ud2 = self.DATA_UD[i][(j+1)%self.CLAPSLEN]   #次の起伏データをud2に代入
                 for k in range(BOARD):  #板の数だけ(120回)繰り返す
-                    pos = k+BOARD*j     #リストの添え字を計算しposに代入
+                    pos = (k+(BOARD*j))+(i*self.CLAPSLEN*BOARD)     #リストの添え字を計算しposに代入
                     self.add(Way(lr1*(BOARD-k)/BOARD + lr2*k/BOARD, ud1*(BOARD-k)/BOARD + ud2*k/BOARD)) #coursedataに道の曲がる向きと起伏を計算しリストに追加
                     if k == 60: #繰り返しの変数jが60なら
                         self.obr[pos] = 1   #道路右側に看板を置く
