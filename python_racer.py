@@ -19,7 +19,7 @@ se_crash = None #衝突時の効果音を読み込む変数
 DATA_LR = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 2, 1, 0, 2, 4, 2, 4, 2, 0, 0, 0, -2, -2, -4, -4, -2, -1, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -2, -1, 0, -2, -4, -2, -4, -2, 0, 0, 0, 2, 2, 4, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 4, 4, 2, 0, 4, 4, 4, 4, 4, 0, 0, 0, -4, -4, -4, -4, -4, -2, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 2, 0, 4, 4, 4, 4, 4, 0, 0, 0, -4, -4, -4, -4, -2, -2, 0, 0, 0, 0, 0, 0, 0],
     ]
 #道路の起伏を作る基になるデータ
 DATA_UD = [
@@ -30,10 +30,6 @@ DATA_UD = [
 CLAPSLEN = len(DATA_LR[0])     #これらのデータの要素数を代入した定数
 CLEN = len(DATA_LR[0])*3
 
-# for i in range(len(DATA_LR)):
-#     print(len(DATA_LR[i]))
-# for j in range(len(DATA_UD)):
-#     print(len(DATA_UD[j]))
 
 BOARD = 120         #道路を描く板の枚数を定める定数
 CLAPMAX = BOARD*CLAPSLEN   #1lapの長さを定める定数
@@ -86,7 +82,6 @@ def main(): #メイン処理を行う関数
     fnt_m = pygame.font.Font(None, 50)  #フォントオブジェクトを作成、中位の文字
     fnt_l = pygame.font.Font(None, 120) #フォントオブジェクトを作成、大きな文字
     d_item = Draw(screen, fnt_ss, fnt_s, fnt_m, fnt_l) #drawオブジェクトを作成
-    c = 0   #実際に走るコースの種類用のインデックス
 
     img_title = pygame.image.load("image_pr/title.png").convert_alpha() #タイトルロゴを読み込む変数
     img_bg = pygame.image.load("image_pr/bg.png").convert() #背景(空と地面の絵)を読み込む変数
@@ -171,6 +166,7 @@ def main(): #メイン処理を行う関数
         for i in range(ctype.LAPS):   #繰り返しで
             d_item.draw_text(ctype.laptime[i], 80, 130+40*i, d_item.YELLOW, fnt_s)  #ラップタイムを表示
 
+        pygame.event.pump()
         key = pygame.key.get_pressed()  #keyに全てのキーの状態を代入
         transi.game_transition(cars, ctype, cdata, d_item, board, img_title, img_car, se_crash, rec, recbk, key, tuto)
 
