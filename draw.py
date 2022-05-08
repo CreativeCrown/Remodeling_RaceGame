@@ -2,7 +2,7 @@ import pygame
 
 class Draw: #描画用クラス
     #コンストラクタ
-    def __init__(self, screen, fnt_ss, fnt_s, fnt_m, fnt_l):
+    def __init__(self, screen, fnt_ss, fnt_s, fnt_m, fnt_l, fnt_d):
         self.screen = screen    #スクリーンの大きさ
         self.vertical = 0    #背景の水平方向
         self.horizon = 0      #背景の垂直方向
@@ -17,6 +17,7 @@ class Draw: #描画用クラス
         self.fnt_s = fnt_s      #Sサイズフォント
         self.fnt_m = fnt_m      #Mサイズフォント
         self.fnt_l = fnt_l      #Lサイズフォント
+        self.fnt_d = fnt_d      #デフォルトフォント
 
     
     def make_horizon(self, board):    #背景の垂直を計算するメソッド
